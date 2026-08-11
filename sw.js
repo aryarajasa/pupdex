@@ -1,4 +1,4 @@
-const CACHE_NAME = 'barkdex-v1';
+const CACHE_NAME = 'barkdex-v2';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -8,7 +8,9 @@ const ASSETS_TO_CACHE = [
   './js/camera.js',
   './js/gamification.js',
   './js/storage.js',
-  './js/audio.js'
+  './js/audio.js',
+  './assets/images/banner.jpg',
+  './assets/images/camera_dog.jpg'
 ];
 
 self.addEventListener('install', (event) => {
@@ -50,7 +52,6 @@ self.addEventListener('fetch', (event) => {
         });
         return networkResponse;
       }).catch(() => {
-        // Fallback for offline if not cached
         if (event.request.headers.get('accept').includes('text/html')) {
           return caches.match('./index.html');
         }

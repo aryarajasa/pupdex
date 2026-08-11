@@ -76,17 +76,18 @@ class BarkdexCamera {
     return canvas.toDataURL('image/jpeg', 0.82);
   }
 
-  // Create a cute cartoon fallback image if camera isn't available
+  // Create a cute cartoon fallback image matching the warm pastel palette
   generatePlaceholderDogImage(sizeKey, vibeKey) {
     const canvas = document.createElement('canvas');
     canvas.width = 400;
     canvas.height = 400;
     const ctx = canvas.getContext('2d');
 
-    // Gradient background
+    // Warm Peach & Lavender Gradient Background
     const grad = ctx.createLinearGradient(0, 0, 400, 400);
-    grad.addColorStop(0, '#ff9a9e');
-    grad.addColorStop(1, '#fecfef');
+    grad.addColorStop(0, '#fde68a');
+    grad.addColorStop(0.5, '#fb923c');
+    grad.addColorStop(1, '#a5b4fc');
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, 400, 400);
 
@@ -103,19 +104,27 @@ class BarkdexCamera {
     ctx.fill();
 
     // Eyes
-    ctx.fillStyle = '#2d3748';
+    ctx.fillStyle = '#1e2025';
     ctx.beginPath();
     ctx.arc(160, 190, 14, 0, Math.PI * 2);
     ctx.arc(240, 190, 14, 0, Math.PI * 2);
     ctx.fill();
 
+    // Eye Sparkles
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(155, 185, 4, 0, Math.PI * 2);
+    ctx.arc(235, 185, 4, 0, Math.PI * 2);
+    ctx.fill();
+
     // Nose
+    ctx.fillStyle = '#1e2025';
     ctx.beginPath();
     ctx.ellipse(200, 225, 18, 12, 0, 0, Math.PI * 2);
     ctx.fill();
 
     // Cute Smile / Tongue
-    ctx.strokeStyle = '#2d3748';
+    ctx.strokeStyle = '#1e2025';
     ctx.lineWidth = 4;
     ctx.beginPath();
     ctx.arc(185, 240, 12, 0, Math.PI);
@@ -123,16 +132,16 @@ class BarkdexCamera {
     ctx.stroke();
 
     // Tongue
-    ctx.fillStyle = '#ff6b81';
+    ctx.fillStyle = '#fb7185';
     ctx.beginPath();
     ctx.arc(200, 252, 10, 0, Math.PI);
     ctx.fill();
 
     // Text Label
-    ctx.fillStyle = '#4a5568';
-    ctx.font = 'bold 20px sans-serif';
+    ctx.fillStyle = '#1e2025';
+    ctx.font = 'bold 20px -apple-system, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(`Wild Good Boi`, 200, 340);
+    ctx.fillText(`Wild Good Boi 🐾`, 200, 345);
 
     return canvas.toDataURL('image/jpeg', 0.85);
   }
