@@ -502,6 +502,102 @@ body {
   margin-top: 8px;
 }
 
+/* Dynamic Time-Responsive Park Arena Backgrounds */
+.park-arena-viewport {
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  padding: 16px;
+  position: relative;
+  box-shadow: var(--shadow-soft);
+  margin-bottom: 16px;
+  border: 3px solid var(--border-subtle);
+}
+
+.park-arena-day {
+  background: linear-gradient(180deg, #60a5fa 0%, #bfdbfe 52%, #86efac 52%, #4ade80 100%);
+  color: #1e2937;
+}
+
+.park-arena-night {
+  background: linear-gradient(180deg, #0f172a 0%, #1e1b4b 52%, #14532d 52%, #166534 100%);
+  color: #ffffff;
+}
+
+.arena-scenery {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 52%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.cloud-float-1 {
+  position: absolute;
+  top: 15px;
+  left: 10%;
+  font-size: 24px;
+  opacity: 0.85;
+  animation: cloudMove 16s linear infinite;
+}
+
+.cloud-float-2 {
+  position: absolute;
+  top: 40px;
+  left: 60%;
+  font-size: 20px;
+  opacity: 0.75;
+  animation: cloudMove 22s linear infinite reverse;
+}
+
+@keyframes cloudMove {
+  0% { transform: translateX(-30px); }
+  50% { transform: translateX(30px); }
+  100% { transform: translateX(-30px); }
+}
+
+.sun-glow {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 34px;
+  filter: drop-shadow(0 0 12px #fde047);
+}
+
+.moon-glow {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 32px;
+  filter: drop-shadow(0 0 14px #e0e7ff);
+}
+
+.star-twinkle {
+  position: absolute;
+  font-size: 14px;
+  animation: starBlink 2s infinite ease-in-out alternate;
+}
+
+@keyframes starBlink {
+  0% { opacity: 0.3; transform: scale(0.8); }
+  100% { opacity: 1; transform: scale(1.2); }
+}
+
+.grass-landscape {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 48%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 0 14px 10px 14px;
+  font-size: 22px;
+  pointer-events: none;
+}
+
 /* Empty State */
 .empty-state {
   text-align: center;
@@ -553,7 +649,7 @@ body {
   background: #333942;
 }
 
-/* Modal Overlay - Clean solid background without WebKit compositing blur bugs */
+/* Modal Overlay */
 .modal-overlay {
   position: fixed;
   inset: 0;

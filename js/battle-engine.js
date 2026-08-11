@@ -1,4 +1,4 @@
-// Solution 2 Rock-Paper-Scissors Bark-Off Battle Engine with Animated Clash & Stat Bars
+// Solution 2 Rock-Paper-Scissors Bark-Off Battle Engine with Dynamic Time-Responsive Park Arena
 class PupdexBattleEngine {
   constructor() {
     this.currentDog = null;
@@ -14,6 +14,11 @@ class PupdexBattleEngine {
       { name: 'Round 3: Charm Contest 💖', key: 'charm', desc: 'Friendly dogs gain +35 Charm!' },
       { name: 'Round 4: Bark Symphony 📢', key: 'bark', desc: 'Barker dogs gain +35 Intimidation!' }
     ];
+  }
+
+  isNightTime() {
+    const hour = new Date().getHours();
+    return hour >= 19 || hour < 6; // Night from 7 PM to 6 AM
   }
 
   startBattle(myDog) {
@@ -194,35 +199,55 @@ class PupdexBattleEngine {
     const container = document.getElementById('battleArenaContainer');
     if (!container) return;
 
+    const isNight = this.isNightTime();
     const mySize = window.pupdexGamification.sizes[this.currentDog.size];
     const myVibe = window.pupdexGamification.vibes[this.currentDog.vibe];
 
     const oppSize = window.pupdexGamification.sizes[this.opponentDog.size];
     const oppVibe = window.pupdexGamification.vibes[this.opponentDog.vibe];
 
+    const sceneryClass = isNight ? 'park-arena-night' : 'park-arena-day';
+    const timeBadge = isNight ? '🌙 NIGHTTIME PARK ARENA' : '☀️ DAYTIME PARK ARENA';
+    const celestialSymbol = isNight ? '<span class="moon-glow">🌙</span><span class="star-twinkle" style="top:20px;left:20%;">✨</span><span class="star-twinkle" style="top:35px;left:75%;">🌟</span>' : '<span class="sun-glow">☀️</span><span class="cloud-float-1">☁️</span><span class="cloud-float-2">☁️</span>';
+    const landscapeFoliage = isNight ? '<span>🌲</span><span>🌳</span><span>🌸</span><span>🌲</span>' : '<span>🌳</span><span>🌸</span><span>🌼</span><span>🌳</span>';
+
     container.innerHTML = `
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:10px;">
-        <div id="battleCardUser" class="matrix-card" style="text-align:center;flex:1;padding:12px;margin:0;transition:transform 0.3s ease;">
-          <img src="${this.currentDog.photo}" style="width:80px;height:80px;border-radius:18px;object-fit:cover;border:3px solid var(--accent-peach);margin-bottom:6px;" />
-          <div style="font-weight:800;font-size:13px;color:var(--text-main);">My Good Boi</div>
-          <div style="font-size:11px;color:var(--text-muted);">${mySize.emoji} ${mySize.name} • ${myVibe.emoji}</div>
-          <div class="progress-track" style="margin-top:8px;height:8px;">
-            <div id="battleBarUser" class="progress-fill" style="width:0%;background:var(--accent-peach);"></div>
+      <div class="park-arena-viewport ${sceneryClass}">
+        <div class="arena-scenery">
+          ${celestialSymbol}
+        </div>
+        
+        <div style="text-align:center;margin-bottom:12px;position:relative;z-index:2;">
+          <span class="badge-pill" style="font-size:11px;font-weight:900;background:rgba(255,255,255,0.25);color:inherit;border:1px solid rgba(255,255,255,0.4);backdrop-filter:blur(4px);">${timeBadge}</span>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:10px;position:relative;z-index:2;">
+          <div id="battleCardUser" class="matrix-card" style="text-align:center;flex:1;padding:12px;margin:0;transition:transform 0.3s ease;">
+            <img src="${this.currentDog.photo}" style="width:80px;height:80px;border-radius:18px;object-fit:cover;border:3px solid var(--accent-peach);margin-bottom:6px;" />
+            <div style="font-weight:800;font-size:13px;color:var(--text-main);">My Good Boi</div>
+            <div style="font-size:11px;color:var(--text-muted);">${mySize.emoji} ${mySize.name} • ${myVibe.emoji}</div>
+            <div class="progress-track" style="margin-top:8px;height:8px;">
+              <div id="battleBarUser" class="progress-fill" style="width:0%;background:var(--accent-peach);"></div>
+            </div>
+          </div>
+
+          <div style="text-align:center;width:50px;">
+            <div style="font-size:22px;font-weight:900;color:var(--accent-peach);text-shadow:0 2px 8px rgba(0,0,0,0.3);">VS</div>
+            <div id="battleScoreText" style="font-size:14px;font-weight:900;color:inherit;margin-top:2px;">0 - 0</div>
+          </div>
+
+          <div id="battleCardOpp" class="matrix-card" style="text-align:center;flex:1;padding:12px;margin:0;transition:transform 0.3s ease;">
+            <img src="${this.opponentDog.photo}" style="width:80px;height:80px;border-radius:18px;object-fit:cover;border:3px solid var(--accent-lavender);margin-bottom:6px;" />
+            <div style="font-weight:800;font-size:13px;color:var(--text-main);">${this.opponentDog.name}</div>
+            <div style="font-size:11px;color:var(--text-muted);">${oppSize.emoji} ${oppSize.name} • ${oppVibe.emoji}</div>
+            <div class="progress-track" style="margin-top:8px;height:8px;">
+              <div id="battleBarOpp" class="progress-fill" style="width:0%;background:var(--accent-lavender);"></div>
+            </div>
           </div>
         </div>
 
-        <div style="text-align:center;width:50px;">
-          <div style="font-size:22px;font-weight:900;color:var(--accent-peach);">VS</div>
-          <div id="battleScoreText" style="font-size:14px;font-weight:900;color:var(--text-main);margin-top:2px;">0 - 0</div>
-        </div>
-
-        <div id="battleCardOpp" class="matrix-card" style="text-align:center;flex:1;padding:12px;margin:0;transition:transform 0.3s ease;">
-          <img src="${this.opponentDog.photo}" style="width:80px;height:80px;border-radius:18px;object-fit:cover;border:3px solid var(--accent-lavender);margin-bottom:6px;" />
-          <div style="font-weight:800;font-size:13px;color:var(--text-main);">${this.opponentDog.name}</div>
-          <div style="font-size:11px;color:var(--text-muted);">${oppSize.emoji} ${oppSize.name} • ${oppVibe.emoji}</div>
-          <div class="progress-track" style="margin-top:8px;height:8px;">
-            <div id="battleBarOpp" class="progress-fill" style="width:0%;background:var(--accent-lavender);"></div>
-          </div>
+        <div class="grass-landscape">
+          ${landscapeFoliage}
         </div>
       </div>
 
