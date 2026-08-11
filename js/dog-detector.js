@@ -1,5 +1,5 @@
-// Bulletproof AI Dog Detector for PupDex PWA
-class PupDexDogDetector {
+// Lazy-Loaded In-Browser AI Dog Detector for PupDex
+class PupdexDogDetector {
   constructor() {
     this.model = null;
     this.isLoading = false;
@@ -7,61 +7,69 @@ class PupDexDogDetector {
     this.strictMode = true; // Default AI Guard enabled
   }
 
+  injectScript(src) {
+    return new Promise((resolve) => {
+      if (document.querySelector(`script[src="${src}"]`)) {
+        resolve();
+        return;
+      }
+      const s = document.createElement('script');
+      s.src = src;
+      s.async = true;
+      s.onload = () => resolve();
+      s.onerror = () => resolve();
+      document.body.appendChild(s);
+    });
+  }
+
   async loadModel() {
     if (this.isReady || this.isLoading) return;
     this.isLoading = true;
 
     try {
-      // Ensure TensorFlow is initialized safely
+      // Dynamically load TensorFlow and COCO-SSD in background without blocking main thread
+      if (!window.tf) {
+        await this.injectScript('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js');
+      }
+      if (!window.cocoSsd) {
+        await this.injectScript('https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js');
+      }
+
       if (window.tf) {
-        // Prefer CPU or WebGL with graceful fallback
-        try {
-          await window.tf.ready();
-        } catch (e) {
-          console.warn('TF ready warning:', e);
-        }
+        try { await window.tf.ready(); } catch (e) {}
       }
 
       if (window.cocoSsd) {
-        console.log('Loading COCO-SSD lite model...');
+        console.log('Loading lightweight COCO-SSD model...');
         this.model = await window.cocoSsd.load({ base: 'lite_mobilenet_v2' });
         this.isReady = true;
-        console.log('PupDex AI Dog Detector is READY!');
-      } else if (window.mobilenet) {
-        console.log('Loading MobileNet model...');
-        this.model = await window.mobilenet.load({ version: 2, alpha: 0.5 });
-        this.isReady = true;
+        console.log('PupDex AI Detector ready!');
       }
     } catch (err) {
-      console.warn('AI Model load error:', err);
+      console.warn('AI Model lazy-load error:', err);
     } finally {
       this.isLoading = false;
     }
   }
 
   async detectDog(canvasOrImgElement) {
-    // If Strict Mode is disabled by user, skip detection instantly
     if (!this.strictMode) {
       return { isDog: true, confidence: 1.0, label: 'Bypassed' };
     }
 
-    // Ensure model is loaded
     if (!this.isReady && !this.isLoading) {
       await this.loadModel();
     }
 
-    // Fallback: If AI model script failed to load (offline or CDN blocked), allow photo
     if (!this.model) {
-      console.warn('AI Model not available, passing check');
       return { isDog: true, confidence: 1.0, label: 'Offline Fallback' };
     }
 
-    // Wrap detection in a 2.5 second timeout so shutter NEVER hangs!
+    // 2-second timeout protection so shutter NEVER hangs!
     return new Promise((resolve) => {
       const timeoutId = setTimeout(() => {
-        console.warn('AI Detection timed out after 2.5s, letting capture through');
         resolve({ isDog: true, confidence: 1.0, label: 'Timeout Fallback' });
-      }, 2500);
+      }, 2000);
 
       this.runDetection(canvasOrImgElement)
         .then(result => {
@@ -70,56 +78,29 @@ class PupDexDogDetector {
         })
         .catch(err => {
           clearTimeout(timeoutId);
-          console.error('Detection run error:', err);
           resolve({ isDog: true, confidence: 1.0, label: 'Error Fallback' });
         });
     });
   }
 
   async runDetection(element) {
-    // Validate element width & height to prevent TF crashes
-    if (element.width === 0 || element.height === 0) {
+    if (!element || element.width === 0 || element.height === 0) {
       return { isDog: true, confidence: 1.0, label: 'Valid Frame' };
     }
 
-    // 1. COCO-SSD Detection
     if (this.model && typeof this.model.detect === 'function') {
       const predictions = await this.model.detect(element);
-      console.log('COCO-SSD Predictions:', predictions);
-
       const dogMatch = predictions.find(p => p.class === 'dog' && p.score >= 0.18);
       if (dogMatch) {
         return { isDog: true, confidence: dogMatch.score, label: 'Dog' };
       }
-
       if (predictions.length > 0) {
-        const top = predictions[0];
-        return { isDog: false, confidence: top.score, label: top.class };
+        return { isDog: false, confidence: predictions[0].score, label: predictions[0].class };
       }
-
-      return { isDog: false, confidence: 0, label: 'No Animal Detected' };
-    }
-
-    // 2. MobileNet Classification
-    if (this.model && typeof this.model.classify === 'function') {
-      const predictions = await this.model.classify(element, 5);
-      console.log('MobileNet Predictions:', predictions);
-
-      const dogKeywords = ['dog', 'puppy', 'retriever', 'terrier', 'spaniel', 'hound', 'corgi', 'husky', 'poodle', 'bulldog', 'chihuahua', 'beagle', 'boxer', 'pug', 'shepherd', 'malamute', 'dalmatian', 'dachs', 'pinscher', 'collie', 'pomeranian', 'samoyed', 'dane', 'bernard'];
-
-      for (const pred of predictions) {
-        const name = pred.className.toLowerCase();
-        if (dogKeywords.some(k => name.includes(k)) && pred.probability >= 0.05) {
-          return { isDog: true, confidence: pred.probability, label: pred.className.split(',')[0] };
-        }
-      }
-
-      const topLabel = predictions[0] ? predictions[0].className.split(',')[0] : 'Unknown';
-      return { isDog: false, confidence: predictions[0]?.probability || 0, label: topLabel };
     }
 
     return { isDog: true, confidence: 1.0, label: 'Good Boi' };
   }
 }
 
-window.PupDexDogDetector = new PupDexDogDetector();
+window.pupdexDogDetector = new PupdexDogDetector();

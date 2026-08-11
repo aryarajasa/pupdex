@@ -1,15 +1,41 @@
 // Leaflet.js Interactive Neighborhood Map Engine for PupDex
-class PupDexMap {
+class PupdexMap {
   constructor() {
     this.map = null;
     this.markers = [];
+    this.isLoading = false;
   }
 
-  init(containerId = 'PupDexMapContainer') {
+  injectScript(src) {
+    return new Promise((resolve) => {
+      if (document.querySelector(`script[src="${src}"]`)) {
+        resolve();
+        return;
+      }
+      const s = document.createElement('script');
+      s.src = src;
+      s.async = true;
+      s.onload = () => resolve();
+      s.onerror = () => resolve();
+      document.body.appendChild(s);
+    });
+  }
+
+  async init(containerId = 'barkdexMapContainer') {
     const container = document.getElementById(containerId);
     if (!container || this.map) return;
 
-    // Default center to city center or current GPS
+    if (!window.L && !this.isLoading) {
+      this.isLoading = true;
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+      document.head.appendChild(link);
+
+      await this.injectScript('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js');
+      this.isLoading = false;
+    }
+
     const defaultLat = -6.2088;
     const defaultLng = 106.8456;
 
@@ -19,13 +45,11 @@ class PupDexMap {
           zoomControl: false
         }).setView([defaultLat, defaultLng], 14);
 
-        // OpenStreetMap warm tile layer
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           maxZoom: 19,
           attribution: '© OpenStreetMap'
         }).addTo(this.map);
 
-        // Try getting real GPS position
         navigator.geolocation?.getCurrentPosition((pos) => {
           const lat = pos.coords.latitude;
           const lng = pos.coords.longitude;
@@ -42,14 +66,12 @@ class PupDexMap {
   async renderDogMarkers() {
     if (!this.map || !window.L) return;
 
-    // Clear existing markers
     this.markers.forEach(m => this.map.removeLayer(m));
     this.markers = [];
 
-    const dogs = await window.PupDexStorage.getAllDogs();
+    const dogs = await window.pupdexStorage.getAllDogs();
 
     dogs.forEach((dog, idx) => {
-      // Create random offset near center if GPS coordinates are default
       const baseLat = -6.2088 + (Math.sin(idx * 1.5) * 0.012);
       const baseLng = 106.8456 + (Math.cos(idx * 1.5) * 0.012);
 
@@ -75,4 +97,4 @@ class PupDexMap {
   }
 }
 
-window.PupDexMap = new PupDexMap();
+window.pupdexMap = new PupdexMap();

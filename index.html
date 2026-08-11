@@ -13,10 +13,7 @@
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="manifest.json">
   
-  <!-- Leaflet.js Map CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
-  <!-- CSS Stylesheet -->
+  <!-- Fast Optimized CSS Stylesheet -->
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -66,7 +63,7 @@
         <img src="assets/images/banner.jpg" alt="PupDex Banner" class="hero-banner-img" />
         <h2 class="hero-banner-title">Wild Dog Encounter! 🐾</h2>
         <p class="hero-banner-desc">Spot a good boi in the street, snap a photo, and collect them in your PupDex!</p>
-        <button class="hero-action-btn" onclick="window.PupDexApp.openCameraModal()">
+        <button class="hero-action-btn" onclick="window.pupdexApp.openCameraModal()">
           <span>Spot a Dog Now</span>
           <span>→</span>
         </button>
@@ -81,7 +78,7 @@
         <img src="assets/images/camera_dog.jpg" class="empty-illustration" alt="Camera Dog" />
         <h3 class="empty-title">No Good Bois Encountered Yet!</h3>
         <p class="empty-desc">Tap the camera button below to log your very first street dog encounter!</p>
-        <button class="btn-primary" onclick="window.PupDexApp.openCameraModal()">Snap First Dog 📸</button>
+        <button class="btn-primary" onclick="window.pupdexApp.openCameraModal()">Snap First Dog 📸</button>
       </div>
     </section>
 
@@ -91,7 +88,7 @@
         <h2 class="section-title"><span>🗺️</span> Neighborhood Map</h2>
       </div>
       <div class="matrix-card" style="padding:0;overflow:hidden;">
-        <div id="PupDexMapContainer" style="width:100%;height:380px;"></div>
+        <div id="barkdexMapContainer" style="width:100%;height:380px;"></div>
       </div>
     </section>
 
@@ -125,7 +122,7 @@
         <h3 id="profileRankTitle" style="font-size: 20px; font-weight: 800;">Puppy Observer 🐣</h3>
         <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Registered PupDex Scout</p>
 
-        <button class="btn-primary" style="margin-top:14px;background:#4285f4;font-size:13px;" onclick="window.PupDexFirebase.signInWithGoogle()">Sign In with Google (Gmail) 🌐</button>
+        <button class="btn-primary" style="margin-top:14px;background:#4285f4;font-size:13px;" onclick="window.pupdexFirebase.signInWithGoogle()">Sign In with Google (Gmail) 🌐</button>
 
         <div style="display: flex; justify-content: space-around; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border-subtle);">
           <div>
@@ -164,8 +161,8 @@
       
       <div id="obSlideDots" class="ob-dots"></div>
 
-      <button id="obNextBtn" class="btn-primary" style="width: 100%; padding: 14px; font-size: 16px;" onclick="window.PupDexOnboarding.nextSlide()">Next →</button>
-      <button class="btn-primary" style="width: 100%; margin-top: 10px; background: #4285f4;" onclick="window.PupDexFirebase.signInWithGoogle()">Sign In with Google (Gmail) 🌐</button>
+      <button id="obNextBtn" class="btn-primary" style="width: 100%; padding: 14px; font-size: 16px;" onclick="window.pupdexOnboarding.nextSlide()">Next →</button>
+      <button class="btn-primary" style="width: 100%; margin-top: 10px; background: #4285f4;" onclick="window.pupdexFirebase.signInWithGoogle()">Sign In with Google (Gmail) 🌐</button>
     </div>
   </div>
 
@@ -190,7 +187,7 @@
       <div class="options-group-title">ADD STICKERS 💖</div>
       <div id="stickerPickerGrid" class="options-grid"></div>
 
-      <button class="btn-primary" style="width:100%;margin-top:20px;padding:14px;" onclick="window.PupDexDecorator.downloadCardPNG()">Download Trading Card 📥</button>
+      <button class="btn-primary" style="width:100%;margin-top:20px;padding:14px;" onclick="window.pupdexDecorator.downloadCardPNG()">Download Trading Card 📥</button>
     </div>
   </div>
 
@@ -205,7 +202,7 @@
         <div style="font-size:48px;">🥩</div>
         <h4 style="font-size:16px;font-weight:800;margin-top:6px;">Sparkle Lure</h4>
         <p style="font-size:12px;color:var(--text-muted);margin:6px 0 14px 0;">Boosts Legendary Shiny Gacha chance by +30% on your next snap!</p>
-        <button class="btn-primary" onclick="window.PupDexTreats.buyLure()">Buy for 20 Bones 🦴</button>
+        <button class="btn-primary" onclick="window.pupdexTreats.buyLure()">Buy for 20 Bones 🦴</button>
       </div>
     </div>
   </div>
@@ -272,8 +269,8 @@
       <div id="detailDogInfo"></div>
 
       <div style="display:flex;gap:10px;margin-top:16px;">
-        <button class="btn-primary" style="flex:1;" onclick="window.PupDexDecorator.openDecoratorModal(window.PupDexApp.currentDetailDog)">Decorate 🎨</button>
-        <button class="btn-primary" style="flex:1;background:var(--accent-lavender);" onclick="window.PupDexBattleEngine.startBattle(window.PupDexApp.currentDetailDog)">Bark-Off 🥊</button>
+        <button class="btn-primary" style="flex:1;" onclick="window.pupdexDecorator.openDecoratorModal(window.pupdexApp.currentDetailDog)">Decorate 🎨</button>
+        <button class="btn-primary" style="flex:1;background:var(--accent-lavender);" onclick="window.pupdexBattleEngine.startBattle(window.pupdexApp.currentDetailDog)">Bark-Off 🥊</button>
       </div>
 
       <button id="deleteDogBtn" style="background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; border-radius: 22px; padding: 12px 24px; font-weight: 800; margin-top: 14px; cursor: pointer; width:100%;">Release Dog 🗑️</button>
@@ -287,7 +284,7 @@
       <span>Dex</span>
     </button>
     
-    <button class="nav-item" data-tab="map" onclick="window.PupDexMap.init()">
+    <button class="nav-item" data-tab="map" onclick="window.pupdexMap.init()">
       <span class="nav-icon">🗺️</span>
       <span>Map</span>
     </button>
@@ -307,19 +304,7 @@
     </button>
   </nav>
 
-  <!-- Leaflet Map JS -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-  <!-- Firebase JS SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
-  <!-- In-Browser AI Engine -->
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"></script>
-
-  <!-- JavaScript Modules -->
+  <!-- Lightweight Core JavaScript Modules -->
   <script src="js/audio.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/gamification.js"></script>

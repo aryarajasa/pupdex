@@ -1,20 +1,42 @@
 // Firebase & Social Engine for PupDex
-class PupDexFirebase {
+class PupdexFirebase {
   constructor() {
     this.user = null;
     this.db = null;
     this.auth = null;
+    this.isLoading = false;
   }
 
-  init() {
-    // Check if Firebase SDK is loaded from CDN
-    if (window.firebase) {
-      try {
+  injectScript(src) {
+    return new Promise((resolve) => {
+      if (document.querySelector(`script[src="${src}"]`)) {
+        resolve();
+        return;
+      }
+      const s = document.createElement('script');
+      s.src = src;
+      s.async = true;
+      s.onload = () => resolve();
+      s.onerror = () => resolve();
+      document.body.appendChild(s);
+    });
+  }
+
+  async lazyLoadFirebase() {
+    if (window.firebase || this.isLoading) return;
+    this.isLoading = true;
+
+    try {
+      await this.injectScript('https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js');
+      await this.injectScript('https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js');
+      await this.injectScript('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js');
+
+      if (window.firebase) {
         const firebaseConfig = {
-          apiKey: "AIzaSyPupDexPublicDemoKey12345",
-          authDomain: "PupDex-app.firebaseapp.com",
-          projectId: "PupDex-app",
-          storageBucket: "PupDex-app.appspot.com",
+          apiKey: "AIzaSyBarkDexPublicDemoKey12345",
+          authDomain: "barkdex-app.firebaseapp.com",
+          projectId: "barkdex-app",
+          storageBucket: "barkdex-app.appspot.com",
           messagingSenderId: "123456789",
           appId: "1:123456789:web:abcdef123456"
         };
@@ -28,32 +50,32 @@ class PupDexFirebase {
         this.auth.onAuthStateChanged((user) => {
           if (user) {
             this.user = user;
-            console.log('Firebase User logged in:', user.displayName);
             this.updateUserUI(user);
-          } else {
-            console.log('User signed out / Guest Mode');
           }
         });
-      } catch (e) {
-        console.warn('Firebase init warning:', e);
       }
+    } catch (e) {
+      console.warn('Firebase lazy-load warning:', e);
+    } finally {
+      this.isLoading = false;
     }
   }
 
   async signInWithGoogle() {
+    await this.lazyLoadFirebase();
     if (!this.auth) {
-      window.PupDexApp.showToast('Google Sign-In ready in Guest Mode! 🧢');
+      window.pupdexApp.showToast('Signed in as Guest Scout 🧢');
       return;
     }
     try {
       const provider = new firebase.auth.GoogleAuthProvider();
       const result = await this.auth.signInWithPopup(provider);
       this.user = result.user;
-      window.PupDexApp.showToast(`Welcome, ${this.user.displayName}! 🐶`);
+      window.pupdexApp.showToast(`Welcome, ${this.user.displayName}! 🐶`);
       this.updateUserUI(this.user);
     } catch (err) {
       console.warn('Google Sign-in failed or closed:', err);
-      window.PupDexApp.showToast('Signed in as Guest Scout 🧢');
+      window.pupdexApp.showToast('Signed in as Guest Scout 🧢');
     }
   }
 
@@ -69,10 +91,7 @@ class PupDexFirebase {
   }
 
   async postToSocialFeed(dogRecord) {
-    if (!this.db || !this.user) {
-      console.log('Saved to local feed');
-      return;
-    }
+    if (!this.db || !this.user) return;
     try {
       await this.db.collection('posts').add({
         ...dogRecord,
@@ -88,4 +107,4 @@ class PupDexFirebase {
   }
 }
 
-window.PupDexFirebase = new PupDexFirebase();
+window.pupdexFirebase = new PupdexFirebase();
