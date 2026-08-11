@@ -23,11 +23,11 @@ class PupDexTreats {
       this.bones -= 20;
       this.activeLure = true;
       localStorage.setItem('PupDex_bones', this.bones);
-      window.PupDexAudio.playLevelUp();
-      window.PupDexApp.showToast('Sparkle Lure Activated! 🥩 (+30% Legendary Luck)');
+      if (window.pupdexAudio) window.pupdexAudio.playLevelUp();
+      if (window.pupdexApp) window.pupdexApp.showToast('Sparkle Lure Activated! 🥩 (+30% Legendary Luck)');
       this.renderTreatUI();
     } else {
-      window.PupDexApp.showToast('Need 20 Bones 🦴 to buy Sparkle Lure!');
+      if (window.pupdexApp) window.pupdexApp.showToast('Need 20 Bones 🦴 to buy Sparkle Lure!');
     }
   }
 
@@ -37,5 +37,6 @@ class PupDexTreats {
   }
 }
 
-window.PupDexTreats = new PupDexTreats();
-window.PupDexTreats.init();
+// Global window aliases for backwards compatibility
+window.pupdexTreats = window.PupDexTreats = window.barkdexTreats = new PupDexTreats();
+window.pupdexTreats.init();

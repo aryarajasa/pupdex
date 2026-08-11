@@ -154,4 +154,5 @@ class PupDexAudio {
   }
 }
 
-window.PupDexAudio = new PupDexAudio();
+// Global window aliases for backwards compatibility
+window.pupdexAudio = window.PupDexAudio = window.barkdexAudio = new PupDexAudio();

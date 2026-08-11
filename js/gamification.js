@@ -138,4 +138,5 @@ class PupDexGamification {
   }
 }
 
-window.PupDexGamification = new PupDexGamification();
+// Global window aliases for backwards compatibility
+window.pupdexGamification = window.PupDexGamification = window.barkdexGamification = new PupDexGamification();

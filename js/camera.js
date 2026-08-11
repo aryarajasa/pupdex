@@ -167,4 +167,5 @@ class PupDexCamera {
   }
 }
 
-window.PupDexCamera = new PupDexCamera();
+// Global window aliases for backwards compatibility
+window.pupdexCamera = window.PupDexCamera = window.barkdexCamera = new PupDexCamera();
