@@ -87,6 +87,19 @@ class BarkdexApp {
       });
     }
 
+    // AI Guard Toggle Button
+    const aiGuardToggleBtn = document.getElementById('aiGuardToggleBtn');
+    if (aiGuardToggleBtn) {
+      aiGuardToggleBtn.addEventListener('click', () => {
+        if (window.barkdexDogDetector) {
+          window.barkdexDogDetector.strictMode = !window.barkdexDogDetector.strictMode;
+          const isOn = window.barkdexDogDetector.strictMode;
+          aiGuardToggleBtn.textContent = isOn ? '🛡️ AI Guard: ON' : '🔓 AI Guard: OFF';
+          this.showToast(isOn ? 'AI Dog Guard Enabled 🛡️' : 'AI Dog Guard Disabled 🔓');
+        }
+      });
+    }
+
     // Close Modals
     document.querySelectorAll('.close-modal-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -294,40 +307,51 @@ class BarkdexApp {
   }
 
   async handleCapture() {
+    const shutterBtn = document.getElementById('shutterBtn');
+    if (shutterBtn) {
+      shutterBtn.style.pointerEvents = 'none';
+      shutterBtn.style.opacity = '0.5';
+    }
+
     window.barkdexAudio.playShutter();
 
-    const canvasEl = document.getElementById('viewfinderCanvas');
+    // Capture snapshot frame
     let imgData = window.barkdexCamera.captureSnapshot();
     if (!imgData) {
       imgData = window.barkdexCamera.generatePlaceholderDogImage('medium', 'friendly');
     }
     this.capturedImageData = imgData;
 
-    this.showToast('AI Scanning for Good Boi... 🔍');
+    // Check frame using Dog Detector
+    let detection = { isDog: true, confidence: 1.0, label: 'Good Boi' };
+    if (window.barkdexDogDetector && window.barkdexDogDetector.strictMode) {
+      this.showToast('AI Scanning for Good Boi... 🔍');
+      const tempImg = await this.createImgFromData(imgData);
+      detection = await window.barkdexDogDetector.detectDog(tempImg);
+      console.log('AI Detector Result:', detection);
+    }
 
-    // Run AI Dog Detector on the canvas element directly
-    const targetElement = canvasEl && canvasEl.width > 0 ? canvasEl : await this.createImgFromData(imgData);
-    const detection = await window.barkdexDogDetector.detectDog(targetElement);
-    console.log('Dog Detection Result:', detection);
+    if (shutterBtn) {
+      shutterBtn.style.pointerEvents = 'auto';
+      shutterBtn.style.opacity = '1';
+    }
 
-    // If NOT a dog (and user hasn't tried twice as override)
-    if (!detection.isDog && this.failedAttempts < 2) {
+    // If NOT a dog and user hasn't tried twice (fail-safe override)
+    if (!detection.isDog && this.failedAttempts < 1) {
       this.failedAttempts += 1;
       window.barkdexAudio.playError();
       
       const detectedName = detection.label || 'Object';
-      this.showToast(`No dog detected! 🐶 (Found: ${detectedName}). Point camera at a dog!`);
+      this.showToast(`No dog detected! 🐶 (Found: ${detectedName}). Tap again to force capture!`);
       
-      // Shake shutter button
-      const shutterBtn = document.getElementById('shutterBtn');
       if (shutterBtn) {
-        shutterBtn.style.transform = 'scale(0.9) rotate(-10deg)';
+        shutterBtn.style.transform = 'scale(0.85)';
         setTimeout(() => shutterBtn.style.transform = '', 300);
       }
-      return; // Keep camera open!
+      return; // Keep camera open for retry
     }
 
-    // Success or Override! Reset failed attempts
+    // Success or Force Capture! Reset failed attempts
     this.failedAttempts = 0;
     window.barkdexCamera.stopCamera();
 

@@ -141,7 +141,10 @@
   <div id="cameraModal" class="modal-overlay">
     <div class="modal-header">
       <h3 style="font-weight: 800; display: flex; align-items: center; gap: 6px;"><span>📷</span> Encountering Dog...</h3>
-      <button class="icon-btn close-modal-btn" style="background: rgba(255,255,255,0.2); color: #fff;">✕</button>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <button id="aiGuardToggleBtn" class="badge-pill" style="font-size: 11px; padding: 4px 10px; background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.3); cursor: pointer;">🛡️ AI Guard: ON</button>
+        <button class="icon-btn close-modal-btn" style="background: rgba(255,255,255,0.2); color: #fff;">✕</button>
+      </div>
     </div>
     
     <div class="viewfinder-wrapper">
@@ -226,8 +229,9 @@
     </button>
   </nav>
 
-  <!-- In-Browser AI Engine (TensorFlow.js + MobileNet) -->
+  <!-- In-Browser AI Engine (TensorFlow.js + COCO-SSD + MobileNet) -->
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1/dist/mobilenet.min.js"></script>
 
   <!-- JavaScript Modules -->
