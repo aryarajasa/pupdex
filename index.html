@@ -13,6 +13,9 @@
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="manifest.json">
   
+  <!-- Leaflet.js Map CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
   <!-- CSS Stylesheet -->
   <link rel="stylesheet" href="css/styles.css">
 </head>
@@ -29,6 +32,9 @@
         <span class="brand-title">BarkDex</span>
       </div>
       <div class="header-actions">
+        <div id="treatBonesBalance" class="streak-badge" style="background:var(--accent-peach-light);color:var(--text-main);border:1px solid var(--accent-peach);" onclick="document.getElementById('treatShopModal').classList.add('active')">
+          15 🦴
+        </div>
         <div class="streak-badge">
           <span>🔥</span>
           <span id="streakNum">1d</span>
@@ -79,7 +85,17 @@
       </div>
     </section>
 
-    <!-- Tab 2: 3x3 Good Boi Matrix -->
+    <!-- Tab 2: Neighborhood Map View -->
+    <section id="mapView" class="tab-view">
+      <div class="section-header">
+        <h2 class="section-title"><span>🗺️</span> Neighborhood Map</h2>
+      </div>
+      <div class="matrix-card" style="padding:0;overflow:hidden;">
+        <div id="barkdexMapContainer" style="width:100%;height:380px;"></div>
+      </div>
+    </section>
+
+    <!-- Tab 3: 3x3 Good Boi Matrix -->
     <section id="matrixView" class="tab-view">
       <div class="section-header">
         <h2 class="section-title"><span>🧩</span> Good Boi Matrix</h2>
@@ -91,7 +107,7 @@
       </div>
     </section>
 
-    <!-- Tab 3: Trophies & Badges -->
+    <!-- Tab 4: Trophies & Badges -->
     <section id="badgesView" class="tab-view">
       <div class="section-header">
         <h2 class="section-title"><span>🏆</span> Trainer Trophies</h2>
@@ -99,7 +115,7 @@
       <div id="badgesGridContainer" class="badges-grid"></div>
     </section>
 
-    <!-- Tab 4: Trainer Profile & Data Backup -->
+    <!-- Tab 5: Trainer Profile & Google Auth -->
     <section id="profileView" class="tab-view">
       <div class="section-header">
         <h2 class="section-title"><span>👤</span> Trainer Profile</h2>
@@ -108,6 +124,8 @@
         <div style="font-size: 54px; margin-bottom: 8px;">🧢</div>
         <h3 id="profileRankTitle" style="font-size: 20px; font-weight: 800;">Puppy Observer 🐣</h3>
         <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Registered BarkDex Scout</p>
+
+        <button class="btn-primary" style="margin-top:14px;background:#4285f4;font-size:13px;" onclick="window.barkdexFirebase.signInWithGoogle()">Sign In with Google (Gmail) 🌐</button>
 
         <div style="display: flex; justify-content: space-around; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border-subtle);">
           <div>
@@ -137,6 +155,61 @@
 
   </main>
 
+  <!-- First-Timer Interactive Onboarding Modal -->
+  <div id="onboardingModal" class="modal-overlay" style="background: var(--bg-primary);">
+    <div class="gacha-container ob-slide-container">
+      <img id="obSlideImg" src="assets/images/ob_1.jpg" class="ob-slide-img" alt="Onboarding" />
+      <h2 id="obSlideTitle" style="font-size: 22px; font-weight: 900; margin-bottom: 8px;">Welcome to BarkDex! 🐾</h2>
+      <p id="obSlideDesc" style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 14px;">Spot a wild dog in the street, snap a photo, and collect them in your BarkDex!</p>
+      
+      <div id="obSlideDots" class="ob-dots"></div>
+
+      <button id="obNextBtn" class="btn-primary" style="width: 100%; padding: 14px; font-size: 16px;" onclick="window.barkdexOnboarding.nextSlide()">Next →</button>
+      <button class="btn-primary" style="width: 100%; margin-top: 10px; background: #4285f4;" onclick="window.barkdexFirebase.signInWithGoogle()">Sign In with Google (Gmail) 🌐</button>
+    </div>
+  </div>
+
+  <!-- Solution 2 Bark-Off Battle Arena Modal -->
+  <div id="battleModal" class="modal-overlay" style="background: var(--bg-primary); overflow-y: auto;">
+    <div class="modal-header">
+      <h3 style="font-weight: 800; color: var(--text-main);">🥊 Bark-Off Battle Arena</h3>
+      <button class="icon-btn close-modal-btn">✕</button>
+    </div>
+    <div class="gacha-container" id="battleArenaContainer"></div>
+  </div>
+
+  <!-- Card Decorator & Sticker Modal -->
+  <div id="decoratorModal" class="modal-overlay" style="background: var(--bg-primary); overflow-y: auto;">
+    <div class="modal-header">
+      <h3 style="font-weight: 800; color: var(--text-main);">🎨 Poké-Sticker Decorator</h3>
+      <button class="icon-btn close-modal-btn">✕</button>
+    </div>
+    <div class="gacha-container">
+      <canvas id="decoratorCanvasPreview" style="width:100%;max-width:320px;border-radius:18px;border:3px solid var(--border-subtle);margin-bottom:14px;"></canvas>
+      
+      <div class="options-group-title">ADD STICKERS 💖</div>
+      <div id="stickerPickerGrid" class="options-grid"></div>
+
+      <button class="btn-primary" style="width:100%;margin-top:20px;padding:14px;" onclick="window.barkdexDecorator.downloadCardPNG()">Download Trading Card 📥</button>
+    </div>
+  </div>
+
+  <!-- Treat Shop Modal -->
+  <div id="treatShopModal" class="modal-overlay" style="background: var(--bg-primary); overflow-y: auto;">
+    <div class="modal-header">
+      <h3 style="font-weight: 800; color: var(--text-main);">🦴 Treat & Lure Shop</h3>
+      <button class="icon-btn close-modal-btn">✕</button>
+    </div>
+    <div class="gacha-container">
+      <div class="matrix-card" style="text-align:center;">
+        <div style="font-size:48px;">🥩</div>
+        <h4 style="font-size:16px;font-weight:800;margin-top:6px;">Sparkle Lure</h4>
+        <p style="font-size:12px;color:var(--text-muted);margin:6px 0 14px 0;">Boosts Legendary Shiny Gacha chance by +30% on your next snap!</p>
+        <button class="btn-primary" onclick="window.barkdexTreats.buyLure()">Buy for 20 Bones 🦴</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Camera Viewfinder Modal -->
   <div id="cameraModal" class="modal-overlay">
     <div class="modal-header">
@@ -156,7 +229,7 @@
     <div class="camera-controls">
       <button id="switchCamBtn" class="icon-btn" style="width: 50px; height: 50px; font-size: 22px; background: rgba(255,255,255,0.2); color: #fff;">🔄</button>
       <button id="shutterBtn" class="shutter-btn" aria-label="Snap Photo"></button>
-      <div style="width: 50px;"></div> <!-- Spacer for symmetry -->
+      <div style="width: 50px;"></div>
     </div>
   </div>
 
@@ -198,7 +271,12 @@
 
       <div id="detailDogInfo"></div>
 
-      <button id="deleteDogBtn" style="background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; border-radius: 22px; padding: 12px 24px; font-weight: 800; margin-top: 24px; cursor: pointer;">Release Dog 🗑️</button>
+      <div style="display:flex;gap:10px;margin-top:16px;">
+        <button class="btn-primary" style="flex:1;" onclick="window.barkdexDecorator.openDecoratorModal(window.barkdexApp.currentDetailDog)">Decorate 🎨</button>
+        <button class="btn-primary" style="flex:1;background:var(--accent-lavender);" onclick="window.barkdexBattleEngine.startBattle(window.barkdexApp.currentDetailDog)">Bark-Off 🥊</button>
+      </div>
+
+      <button id="deleteDogBtn" style="background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; border-radius: 22px; padding: 12px 24px; font-weight: 800; margin-top: 14px; cursor: pointer; width:100%;">Release Dog 🗑️</button>
     </div>
   </div>
 
@@ -209,18 +287,18 @@
       <span>Dex</span>
     </button>
     
-    <button class="nav-item" data-tab="matrix">
-      <span class="nav-icon">🧩</span>
-      <span>Matrix</span>
+    <button class="nav-item" data-tab="map" onclick="window.barkdexMap.init()">
+      <span class="nav-icon">🗺️</span>
+      <span>Map</span>
     </button>
 
     <div class="nav-item nav-encounter">
       <button id="encounterFab" class="encounter-fab" aria-label="Encounter Dog">📷</button>
     </div>
 
-    <button class="nav-item" data-tab="badges">
-      <span class="nav-icon">🏆</span>
-      <span>Badges</span>
+    <button class="nav-item" data-tab="matrix">
+      <span class="nav-icon">🧩</span>
+      <span>Matrix</span>
     </button>
 
     <button class="nav-item" data-tab="profile">
@@ -229,10 +307,17 @@
     </button>
   </nav>
 
-  <!-- In-Browser AI Engine (TensorFlow.js + COCO-SSD + MobileNet) -->
+  <!-- Leaflet Map JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Firebase JS SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+  <!-- In-Browser AI Engine -->
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1/dist/mobilenet.min.js"></script>
 
   <!-- JavaScript Modules -->
   <script src="js/audio.js"></script>
@@ -240,6 +325,12 @@
   <script src="js/gamification.js"></script>
   <script src="js/dog-detector.js"></script>
   <script src="js/camera.js"></script>
+  <script src="js/onboarding.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/map-engine.js"></script>
+  <script src="js/decorator.js"></script>
+  <script src="js/battle-engine.js"></script>
+  <script src="js/treats.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

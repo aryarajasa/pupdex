@@ -7,6 +7,7 @@ class BarkdexApp {
     this.pendingRarity = 'common';
     this.capturedImageData = null;
     this.failedAttempts = 0;
+    this.currentDetailDog = null;
 
     this.profile = {
       username: 'Good Boi Scout',
@@ -34,10 +35,10 @@ class BarkdexApp {
     await window.barkdexStorage.init();
     this.profile = window.barkdexStorage.getProfile();
 
-    // Pre-load AI Dog Detector Model in background
-    if (window.barkdexDogDetector) {
-      window.barkdexDogDetector.loadModel();
-    }
+    // Initialize Modules
+    if (window.barkdexOnboarding) window.barkdexOnboarding.init();
+    if (window.barkdexFirebase) window.barkdexFirebase.init();
+    if (window.barkdexDogDetector) window.barkdexDogDetector.loadModel();
 
     // Check if initial sample data is needed for empty album
     const existingDogs = await window.barkdexStorage.getAllDogs();
@@ -181,6 +182,8 @@ class BarkdexApp {
   async renderCurrentView() {
     if (this.currentView === 'dex') {
       await this.renderDexView();
+    } else if (this.currentView === 'map') {
+      window.barkdexMap.init();
     } else if (this.currentView === 'matrix') {
       await this.renderMatrixView();
     } else if (this.currentView === 'badges') {
@@ -355,8 +358,15 @@ class BarkdexApp {
     this.failedAttempts = 0;
     window.barkdexCamera.stopCamera();
 
+    // Check Sparkle Lure
+    let streakBonus = this.profile.streak;
+    if (window.barkdexTreats && window.barkdexTreats.activeLure) {
+      streakBonus += 5; // Extra legendary luck
+      window.barkdexTreats.activeLure = false;
+    }
+
     // Roll Gacha Rarity
-    this.pendingRarity = window.barkdexGamification.rollRarity(this.profile.streak);
+    this.pendingRarity = window.barkdexGamification.rollRarity(streakBonus);
     window.barkdexAudio.playGachaReveal(this.pendingRarity);
 
     // Hide Camera Modal & Open Options Selection Modal
@@ -469,11 +479,15 @@ class BarkdexApp {
     };
 
     await window.barkdexStorage.saveDog(dogRecord);
+    if (window.barkdexFirebase) {
+      window.barkdexFirebase.postToSocialFeed(dogRecord);
+    }
 
     // Calculate XP & Level Up
     const earnedXP = window.barkdexGamification.calculateXP(this.pendingRarity, isNewCombo);
     this.profile.xp += earnedXP;
     this.profile = window.barkdexGamification.updateStreak(this.profile);
+    window.barkdexTreats.addBones(5); // +5 Bones per catch
 
     const nextXP = window.barkdexGamification.getXPForLevel(this.profile.level);
     if (this.profile.xp >= nextXP) {
@@ -481,7 +495,7 @@ class BarkdexApp {
       window.barkdexAudio.playLevelUp();
       this.showToast(`LEVEL UP! You are now Lvl ${this.profile.level}! 🎉`);
     } else {
-      this.showToast(`+${earnedXP} XP! Logged to BarkDex 🐾`);
+      this.showToast(`+${earnedXP} XP & +5 Bones 🦴! Logged to BarkDex 🐾`);
     }
 
     // Check Badges
@@ -506,6 +520,7 @@ class BarkdexApp {
     const dog = dogs.find(d => d.id === id);
     if (!dog) return;
 
+    this.currentDetailDog = dog;
     const modal = document.getElementById('dogDetailModal');
     const imgEl = document.getElementById('detailDogImg');
     const infoEl = document.getElementById('detailDogInfo');

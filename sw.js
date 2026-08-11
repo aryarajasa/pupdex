@@ -1,4 +1,4 @@
-const CACHE_NAME = 'barkdex-v3';
+const CACHE_NAME = 'barkdex-v4';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -10,8 +10,17 @@ const ASSETS_TO_CACHE = [
   './js/gamification.js',
   './js/storage.js',
   './js/audio.js',
+  './js/onboarding.js',
+  './js/firebase-config.js',
+  './js/map-engine.js',
+  './js/decorator.js',
+  './js/battle-engine.js',
+  './js/treats.js',
   './assets/images/banner.jpg',
-  './assets/images/camera_dog.jpg'
+  './assets/images/camera_dog.jpg',
+  './assets/images/ob_1.jpg',
+  './assets/images/ob_2.jpg',
+  './assets/images/ob_3.jpg'
 ];
 
 self.addEventListener('install', (event) => {
