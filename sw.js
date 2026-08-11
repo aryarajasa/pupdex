@@ -1,4 +1,4 @@
-const CACHE_NAME = 'barkdex-v2';
+const CACHE_NAME = 'barkdex-v3';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -6,6 +6,7 @@ const ASSETS_TO_CACHE = [
   './css/styles.css',
   './js/app.js',
   './js/camera.js',
+  './js/dog-detector.js',
   './js/gamification.js',
   './js/storage.js',
   './js/audio.js',

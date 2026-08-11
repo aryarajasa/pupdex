@@ -6,6 +6,7 @@ class BarkdexApp {
     this.selectedVibe = null;
     this.pendingRarity = 'common';
     this.capturedImageData = null;
+    this.failedAttempts = 0;
 
     this.profile = {
       username: 'Good Boi Scout',
@@ -32,6 +33,11 @@ class BarkdexApp {
     // Load Profile & Initialize Storage
     await window.barkdexStorage.init();
     this.profile = window.barkdexStorage.getProfile();
+
+    // Pre-load AI Dog Detector Model in background
+    if (window.barkdexDogDetector) {
+      window.barkdexDogDetector.loadModel();
+    }
 
     // Check if initial sample data is needed for empty album
     const existingDogs = await window.barkdexStorage.getAllDogs();
@@ -295,6 +301,37 @@ class BarkdexApp {
       imgData = window.barkdexCamera.generatePlaceholderDogImage('medium', 'friendly');
     }
     this.capturedImageData = imgData;
+
+    // Run AI Dog Detector
+    this.showToast('AI Scanning for Good Boi... 🔍');
+
+    // Create an image element to pass to MobileNet
+    const tempImg = new Image();
+    tempImg.src = imgData;
+    await tempImg.decode();
+
+    const detection = await window.barkdexDogDetector.detectDog(tempImg);
+    console.log('Dog Detection Result:', detection);
+
+    // If NOT a dog (and user hasn't tried multiple times as override)
+    if (!detection.isDog && this.failedAttempts < 2) {
+      this.failedAttempts += 1;
+      window.barkdexAudio.playError();
+      
+      const detectedName = detection.label || 'Object';
+      this.showToast(`No dog detected! 🐶 (Found: ${detectedName}). Point camera at a dog!`);
+      
+      // Shake shutter button
+      const shutterBtn = document.getElementById('shutterBtn');
+      if (shutterBtn) {
+        shutterBtn.style.animation = 'shake 0.4s ease';
+        setTimeout(() => shutterBtn.style.animation = '', 400);
+      }
+      return; // Stop capture flow, keep camera open!
+    }
+
+    // Success! Reset failed attempts
+    this.failedAttempts = 0;
     window.barkdexCamera.stopCamera();
 
     // Roll Gacha Rarity
