@@ -1,5 +1,5 @@
 // HTML5 Canvas Sticker Decorator & Card Exporter for PupDex
-class PupDexDecorator {
+class PupdexDecorator {
   constructor() {
     this.currentDog = null;
     this.appliedStickers = [];
@@ -14,8 +14,12 @@ class PupDexDecorator {
   }
 
   openDecoratorModal(dog) {
+    if (!dog) return;
     this.currentDog = dog;
     this.appliedStickers = [];
+
+    document.getElementById('dogDetailModal')?.classList.remove('active');
+
     const modal = document.getElementById('decoratorModal');
     const preview = document.getElementById('decoratorCanvasPreview');
     if (!modal || !preview) return;
@@ -28,11 +32,11 @@ class PupDexDecorator {
   addSticker(emoji) {
     this.appliedStickers.push({
       emoji,
-      x: 200 + (Math.random() * 60 - 30),
-      y: 200 + (Math.random() * 60 - 30),
-      size: 48
+      x: 180 + (Math.random() * 80 - 40),
+      y: 220 + (Math.random() * 80 - 40),
+      size: 54
     });
-    window.PupDexAudio.playCardClick();
+    window.pupdexAudio.playCardClick();
     this.renderCanvas();
   }
 
@@ -41,9 +45,9 @@ class PupDexDecorator {
     if (!grid) return;
 
     grid.innerHTML = this.stickers.map(s => `
-      <button class="option-card" style="padding:8px;" onclick="window.PupDexDecorator.addSticker('${s.emoji.split(' ')[0]}')">
-        <div style="font-size:26px;">${s.emoji.split(' ')[0]}</div>
-        <div style="font-size:10px;font-weight:700;margin-top:2px;">${s.name}</div>
+      <button class="option-card" style="padding:10px;" onclick="window.pupdexDecorator.addSticker('${s.emoji.split(' ')[0]}')">
+        <div style="font-size:28px;">${s.emoji.split(' ')[0]}</div>
+        <div style="font-size:11px;font-weight:800;margin-top:2px;">${s.name}</div>
       </button>
     `).join('');
   }
@@ -105,8 +109,8 @@ class PupDexDecorator {
     a.href = url;
     a.download = `PupDex-Card-${Date.now()}.png`;
     a.click();
-    window.PupDexApp.showToast('Trading Card downloaded! 📸');
+    window.pupdexApp.showToast('Trading Card downloaded! 📸');
   }
 }
 
-window.PupDexDecorator = new PupDexDecorator();
+window.pupdexDecorator = new PupdexDecorator();

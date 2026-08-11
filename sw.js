@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pupdex-v6';
+const CACHE_NAME = 'pupdex-v7';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
