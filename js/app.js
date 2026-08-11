@@ -296,24 +296,21 @@ class BarkdexApp {
   async handleCapture() {
     window.barkdexAudio.playShutter();
 
+    const canvasEl = document.getElementById('viewfinderCanvas');
     let imgData = window.barkdexCamera.captureSnapshot();
     if (!imgData) {
       imgData = window.barkdexCamera.generatePlaceholderDogImage('medium', 'friendly');
     }
     this.capturedImageData = imgData;
 
-    // Run AI Dog Detector
     this.showToast('AI Scanning for Good Boi... 🔍');
 
-    // Create an image element to pass to MobileNet
-    const tempImg = new Image();
-    tempImg.src = imgData;
-    await tempImg.decode();
-
-    const detection = await window.barkdexDogDetector.detectDog(tempImg);
+    // Run AI Dog Detector on the canvas element directly
+    const targetElement = canvasEl && canvasEl.width > 0 ? canvasEl : await this.createImgFromData(imgData);
+    const detection = await window.barkdexDogDetector.detectDog(targetElement);
     console.log('Dog Detection Result:', detection);
 
-    // If NOT a dog (and user hasn't tried multiple times as override)
+    // If NOT a dog (and user hasn't tried twice as override)
     if (!detection.isDog && this.failedAttempts < 2) {
       this.failedAttempts += 1;
       window.barkdexAudio.playError();
@@ -324,13 +321,13 @@ class BarkdexApp {
       // Shake shutter button
       const shutterBtn = document.getElementById('shutterBtn');
       if (shutterBtn) {
-        shutterBtn.style.animation = 'shake 0.4s ease';
-        setTimeout(() => shutterBtn.style.animation = '', 400);
+        shutterBtn.style.transform = 'scale(0.9) rotate(-10deg)';
+        setTimeout(() => shutterBtn.style.transform = '', 300);
       }
-      return; // Stop capture flow, keep camera open!
+      return; // Keep camera open!
     }
 
-    // Success! Reset failed attempts
+    // Success or Override! Reset failed attempts
     this.failedAttempts = 0;
     window.barkdexCamera.stopCamera();
 
@@ -341,6 +338,15 @@ class BarkdexApp {
     // Hide Camera Modal & Open Options Selection Modal
     document.getElementById('cameraModal')?.classList.remove('active');
     this.openOptionsModal();
+  }
+
+  createImgFromData(dataUrl) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => resolve(img);
+      img.src = dataUrl;
+    });
   }
 
   openOptionsModal() {
