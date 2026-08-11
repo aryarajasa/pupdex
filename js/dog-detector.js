@@ -1,5 +1,5 @@
-// Bulletproof AI Dog Detector for BarkDex PWA
-class BarkdexDogDetector {
+// Bulletproof AI Dog Detector for PupDex PWA
+class PupDexDogDetector {
   constructor() {
     this.model = null;
     this.isLoading = false;
@@ -26,7 +26,7 @@ class BarkdexDogDetector {
         console.log('Loading COCO-SSD lite model...');
         this.model = await window.cocoSsd.load({ base: 'lite_mobilenet_v2' });
         this.isReady = true;
-        console.log('BarkDex AI Dog Detector is READY!');
+        console.log('PupDex AI Dog Detector is READY!');
       } else if (window.mobilenet) {
         console.log('Loading MobileNet model...');
         this.model = await window.mobilenet.load({ version: 2, alpha: 0.5 });
@@ -122,4 +122,4 @@ class BarkdexDogDetector {
   }
 }
 
-window.barkdexDogDetector = new BarkdexDogDetector();
+window.PupDexDogDetector = new PupDexDogDetector();

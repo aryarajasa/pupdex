@@ -1,5 +1,5 @@
-// Audio Synthesizer for BarkDex using Web Audio API
-class BarkdexAudio {
+// Audio Synthesizer for PupDex using Web Audio API
+class PupDexAudio {
   constructor() {
     this.ctx = null;
     this.enabled = true;
@@ -154,4 +154,4 @@ class BarkdexAudio {
   }
 }
 
-window.barkdexAudio = new BarkdexAudio();
+window.PupDexAudio = new PupDexAudio();

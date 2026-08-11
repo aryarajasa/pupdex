@@ -1,7 +1,7 @@
-// Storage Manager for BarkDex (IndexedDB + LocalStorage fallback)
-class BarkdexStorage {
+// Storage Manager for PupDex (IndexedDB + LocalStorage fallback)
+class PupDexStorage {
   constructor() {
-    this.dbName = 'BarkDexDB';
+    this.dbName = 'PupDexDB';
     this.dbVersion = 1;
     this.db = null;
   }
@@ -47,7 +47,7 @@ class BarkdexStorage {
         // LocalStorage fallback for lightweight emergency save
         const existing = this.getDogsLocalStorage();
         existing.unshift(dogData);
-        localStorage.setItem('barkdex_dogs_fallback', JSON.stringify(existing));
+        localStorage.setItem('PupDex_dogs_fallback', JSON.stringify(existing));
         resolve(dogData);
       }
     });
@@ -94,7 +94,7 @@ class BarkdexStorage {
 
   getDogsLocalStorage() {
     try {
-      return JSON.parse(localStorage.getItem('barkdex_dogs_fallback')) || [];
+      return JSON.parse(localStorage.getItem('PupDex_dogs_fallback')) || [];
     } catch (e) {
       return [];
     }
@@ -112,7 +112,7 @@ class BarkdexStorage {
       matrixUnlocked: [] // Combos unlocked like 'potato-friendly', etc.
     };
     try {
-      const data = localStorage.getItem('barkdex_profile');
+      const data = localStorage.getItem('PupDex_profile');
       return data ? { ...defaultProfile, ...JSON.parse(data) } : defaultProfile;
     } catch (e) {
       return defaultProfile;
@@ -121,7 +121,7 @@ class BarkdexStorage {
 
   saveProfile(profile) {
     try {
-      localStorage.setItem('barkdex_profile', JSON.stringify(profile));
+      localStorage.setItem('PupDex_profile', JSON.stringify(profile));
     } catch (e) {
       console.error('Failed to save profile:', e);
     }
@@ -140,7 +140,7 @@ class BarkdexStorage {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `BarkDex-Backup-${new Date().toISOString().slice(0,10)}.json`;
+    a.download = `PupDex-Backup-${new Date().toISOString().slice(0,10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
   }
@@ -164,4 +164,4 @@ class BarkdexStorage {
   }
 }
 
-window.barkdexStorage = new BarkdexStorage();
+window.PupDexStorage = new PupDexStorage();

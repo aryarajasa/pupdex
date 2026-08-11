@@ -1,5 +1,5 @@
-// Camera Manager for BarkDex Viewfinder
-class BarkdexCamera {
+// Camera Manager for PupDex Viewfinder
+class PupDexCamera {
   constructor() {
     this.stream = null;
     this.videoElement = null;
@@ -167,4 +167,4 @@ class BarkdexCamera {
   }
 }
 
-window.barkdexCamera = new BarkdexCamera();
+window.PupDexCamera = new PupDexCamera();

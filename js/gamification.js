@@ -1,5 +1,5 @@
-// Gamification Engine for BarkDex
-class BarkdexGamification {
+// Gamification Engine for PupDex
+class PupDexGamification {
   constructor() {
     this.rarities = {
       common: { name: 'Common', emoji: '⚪', color: '#94a3b8', multiplier: 1, chance: 0.60, title: 'Standard Good Boi' },
@@ -27,10 +27,10 @@ class BarkdexGamification {
       'Park Explorer 🌳',
       'Neighborhood Scout 🔭',
       'Canine Tracker 🐕',
-      'BarkDex Specialist 🎖️',
+      'PupDex Specialist 🎖️',
       'Doggo Legend 🌟',
       'Master Trainer 👑',
-      'Ultimate BarkDex Champion 🏆'
+      'Ultimate PupDex Champion 🏆'
     ];
 
     this.achievementsList = [
@@ -138,4 +138,4 @@ class BarkdexGamification {
   }
 }
 
-window.barkdexGamification = new BarkdexGamification();
+window.PupDexGamification = new PupDexGamification();

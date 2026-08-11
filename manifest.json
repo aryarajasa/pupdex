@@ -1,7 +1,7 @@
 {
-  "name": "BarkDex - Good Boi Collector",
-  "short_name": "BarkDex",
-  "description": "Encounter, log, and collect wild dogs in your neighborhood BarkDex!",
+  "name": "PupDex - Good Boi Collector",
+  "short_name": "PupDex",
+  "description": "Encounter, log, and collect wild dogs in your neighborhood PupDex!",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0f172a",

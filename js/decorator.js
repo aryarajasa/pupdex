@@ -1,5 +1,5 @@
-// HTML5 Canvas Sticker Decorator & Card Exporter for BarkDex
-class BarkdexDecorator {
+// HTML5 Canvas Sticker Decorator & Card Exporter for PupDex
+class PupDexDecorator {
   constructor() {
     this.currentDog = null;
     this.appliedStickers = [];
@@ -32,7 +32,7 @@ class BarkdexDecorator {
       y: 200 + (Math.random() * 60 - 30),
       size: 48
     });
-    window.barkdexAudio.playCardClick();
+    window.PupDexAudio.playCardClick();
     this.renderCanvas();
   }
 
@@ -41,7 +41,7 @@ class BarkdexDecorator {
     if (!grid) return;
 
     grid.innerHTML = this.stickers.map(s => `
-      <button class="option-card" style="padding:8px;" onclick="window.barkdexDecorator.addSticker('${s.emoji.split(' ')[0]}')">
+      <button class="option-card" style="padding:8px;" onclick="window.PupDexDecorator.addSticker('${s.emoji.split(' ')[0]}')">
         <div style="font-size:26px;">${s.emoji.split(' ')[0]}</div>
         <div style="font-size:10px;font-weight:700;margin-top:2px;">${s.name}</div>
       </button>
@@ -70,7 +70,7 @@ class BarkdexDecorator {
     // Title Text
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 24px -apple-system, sans-serif';
-    ctx.fillText('BarkDex Trading Card 🐾', 20, 50);
+    ctx.fillText('PupDex Trading Card 🐾', 20, 50);
 
     // Dog Photo
     const img = new Image();
@@ -103,10 +103,10 @@ class BarkdexDecorator {
     const url = canvas.toDataURL('image/png');
     const a = document.createElement('a');
     a.href = url;
-    a.download = `BarkDex-Card-${Date.now()}.png`;
+    a.download = `PupDex-Card-${Date.now()}.png`;
     a.click();
-    window.barkdexApp.showToast('Trading Card downloaded! 📸');
+    window.PupDexApp.showToast('Trading Card downloaded! 📸');
   }
 }
 
-window.barkdexDecorator = new BarkdexDecorator();
+window.PupDexDecorator = new PupDexDecorator();

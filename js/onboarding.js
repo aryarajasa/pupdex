@@ -1,11 +1,11 @@
-// Interactive Onboarding Controller for BarkDex
-class BarkdexOnboarding {
+// Interactive Onboarding Controller for PupDex
+class PupDexOnboarding {
   constructor() {
     this.currentSlide = 0;
     this.slides = [
       {
-        title: "Welcome to BarkDex! 🐾",
-        desc: "Spot a wild dog in the street, snap a photo, and collect them in your neighborhood BarkDex album!",
+        title: "Welcome to PupDex! 🐾",
+        desc: "Spot a wild dog in the street, snap a photo, and collect them in your neighborhood PupDex album!",
         img: "assets/images/ob_1.jpg"
       },
       {
@@ -22,7 +22,7 @@ class BarkdexOnboarding {
   }
 
   init() {
-    const hasSeen = localStorage.getItem('barkdex_seen_onboarding');
+    const hasSeen = localStorage.getItem('PupDex_seen_onboarding');
     if (!hasSeen) {
       this.openModal();
     }
@@ -37,7 +37,7 @@ class BarkdexOnboarding {
   }
 
   closeModal() {
-    localStorage.setItem('barkdex_seen_onboarding', 'true');
+    localStorage.setItem('PupDex_seen_onboarding', 'true');
     const modal = document.getElementById('onboardingModal');
     if (modal) modal.classList.remove('active');
   }
@@ -82,4 +82,4 @@ class BarkdexOnboarding {
   }
 }
 
-window.barkdexOnboarding = new BarkdexOnboarding();
+window.PupDexOnboarding = new PupDexOnboarding();

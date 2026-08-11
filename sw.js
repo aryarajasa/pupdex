@@ -1,4 +1,4 @@
-const CACHE_NAME = 'barkdex-v4';
+const CACHE_NAME = 'PupDex-v4';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

@@ -1,5 +1,5 @@
 // Solution 2 Rock-Paper-Scissors Bark-Off Battle Engine
-class BarkdexBattleEngine {
+class PupDexBattleEngine {
   constructor() {
     this.currentDog = null;
     this.opponentDog = null;
@@ -38,7 +38,7 @@ class BarkdexBattleEngine {
       size,
       vibe,
       rarity,
-      photo: window.barkdexCamera.generatePlaceholderDogImage(size, vibe)
+      photo: window.PupDexCamera.generatePlaceholderDogImage(size, vibe)
     };
   }
 
@@ -86,10 +86,10 @@ class BarkdexBattleEngine {
 
     if (res.p1Wins) {
       this.userScore++;
-      window.barkdexAudio.playCardClick();
+      window.PupDexAudio.playCardClick();
     } else {
       this.oppScore++;
-      window.barkdexAudio.playError();
+      window.PupDexAudio.playError();
     }
 
     this.currentRound++;
@@ -99,16 +99,16 @@ class BarkdexBattleEngine {
   finishBattle() {
     const userWon = this.userScore >= this.oppScore;
     if (userWon) {
-      window.barkdexAudio.playLevelUp();
-      window.barkdexApp.profile.xp += 100;
-      window.barkdexTreats.addBones(10);
-      window.barkdexApp.showToast('VICTORY! +100 XP & +10 Bones 🦴!');
+      window.PupDexAudio.playLevelUp();
+      window.PupDexApp.profile.xp += 100;
+      window.PupDexTreats.addBones(10);
+      window.PupDexApp.showToast('VICTORY! +100 XP & +10 Bones 🦴!');
     } else {
-      window.barkdexAudio.playError();
-      window.barkdexApp.showToast('Good Match! Earned +25 XP 🐾');
+      window.PupDexAudio.playError();
+      window.PupDexApp.showToast('Good Match! Earned +25 XP 🐾');
     }
-    window.barkdexStorage.saveProfile(window.barkdexApp.profile);
-    window.barkdexApp.renderHeader();
+    window.PupDexStorage.saveProfile(window.PupDexApp.profile);
+    window.PupDexApp.renderHeader();
   }
 
   renderBattleArena(lastRoundType = '', lastRes = null) {
@@ -140,7 +140,7 @@ class BarkdexBattleEngine {
       </div>
 
       ${this.currentRound < 3 ? `
-        <button class="btn-primary" style="width:100%;padding:14px;font-size:15px;" onclick="window.barkdexBattleEngine.playNextRound()">Fight Round ${this.currentRound + 1} 🥊</button>
+        <button class="btn-primary" style="width:100%;padding:14px;font-size:15px;" onclick="window.PupDexBattleEngine.playNextRound()">Fight Round ${this.currentRound + 1} 🥊</button>
       ` : `
         <button class="btn-primary" style="width:100%;padding:14px;font-size:15px;" onclick="document.getElementById('battleModal').classList.remove('active')">Collect Rewards 🏆</button>
       `}
@@ -148,4 +148,4 @@ class BarkdexBattleEngine {
   }
 }
 
-window.barkdexBattleEngine = new BarkdexBattleEngine();
+window.PupDexBattleEngine = new PupDexBattleEngine();

@@ -1,11 +1,11 @@
-// Leaflet.js Interactive Neighborhood Map Engine for BarkDex
-class BarkdexMap {
+// Leaflet.js Interactive Neighborhood Map Engine for PupDex
+class PupDexMap {
   constructor() {
     this.map = null;
     this.markers = [];
   }
 
-  init(containerId = 'barkdexMapContainer') {
+  init(containerId = 'PupDexMapContainer') {
     const container = document.getElementById(containerId);
     if (!container || this.map) return;
 
@@ -46,7 +46,7 @@ class BarkdexMap {
     this.markers.forEach(m => this.map.removeLayer(m));
     this.markers = [];
 
-    const dogs = await window.barkdexStorage.getAllDogs();
+    const dogs = await window.PupDexStorage.getAllDogs();
 
     dogs.forEach((dog, idx) => {
       // Create random offset near center if GPS coordinates are default
@@ -75,4 +75,4 @@ class BarkdexMap {
   }
 }
 
-window.barkdexMap = new BarkdexMap();
+window.PupDexMap = new PupDexMap();

@@ -1,5 +1,5 @@
-// Firebase & Social Engine for BarkDex
-class BarkdexFirebase {
+// Firebase & Social Engine for PupDex
+class PupDexFirebase {
   constructor() {
     this.user = null;
     this.db = null;
@@ -11,10 +11,10 @@ class BarkdexFirebase {
     if (window.firebase) {
       try {
         const firebaseConfig = {
-          apiKey: "AIzaSyBarkDexPublicDemoKey12345",
-          authDomain: "barkdex-app.firebaseapp.com",
-          projectId: "barkdex-app",
-          storageBucket: "barkdex-app.appspot.com",
+          apiKey: "AIzaSyPupDexPublicDemoKey12345",
+          authDomain: "PupDex-app.firebaseapp.com",
+          projectId: "PupDex-app",
+          storageBucket: "PupDex-app.appspot.com",
           messagingSenderId: "123456789",
           appId: "1:123456789:web:abcdef123456"
         };
@@ -42,18 +42,18 @@ class BarkdexFirebase {
 
   async signInWithGoogle() {
     if (!this.auth) {
-      window.barkdexApp.showToast('Google Sign-In ready in Guest Mode! 🧢');
+      window.PupDexApp.showToast('Google Sign-In ready in Guest Mode! 🧢');
       return;
     }
     try {
       const provider = new firebase.auth.GoogleAuthProvider();
       const result = await this.auth.signInWithPopup(provider);
       this.user = result.user;
-      window.barkdexApp.showToast(`Welcome, ${this.user.displayName}! 🐶`);
+      window.PupDexApp.showToast(`Welcome, ${this.user.displayName}! 🐶`);
       this.updateUserUI(this.user);
     } catch (err) {
       console.warn('Google Sign-in failed or closed:', err);
-      window.barkdexApp.showToast('Signed in as Guest Scout 🧢');
+      window.PupDexApp.showToast('Signed in as Guest Scout 🧢');
     }
   }
 
@@ -88,4 +88,4 @@ class BarkdexFirebase {
   }
 }
 
-window.barkdexFirebase = new BarkdexFirebase();
+window.PupDexFirebase = new PupDexFirebase();

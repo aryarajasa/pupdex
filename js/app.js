@@ -1,5 +1,5 @@
-// BarkDex Application Controller
-class BarkdexApp {
+// PupDex Application Controller
+class PupDexApp {
   constructor() {
     this.currentView = 'dex';
     this.selectedSize = null;
@@ -25,23 +25,23 @@ class BarkdexApp {
     if ('serviceWorker' in navigator) {
       try {
         await navigator.serviceWorker.register('./sw.js');
-        console.log('BarkDex ServiceWorker registered');
+        console.log('PupDex ServiceWorker registered');
       } catch (err) {
         console.warn('ServiceWorker registration failed:', err);
       }
     }
 
     // Load Profile & Initialize Storage
-    await window.barkdexStorage.init();
-    this.profile = window.barkdexStorage.getProfile();
+    await window.PupDexStorage.init();
+    this.profile = window.PupDexStorage.getProfile();
 
     // Initialize Modules
-    if (window.barkdexOnboarding) window.barkdexOnboarding.init();
-    if (window.barkdexFirebase) window.barkdexFirebase.init();
-    if (window.barkdexDogDetector) window.barkdexDogDetector.loadModel();
+    if (window.PupDexOnboarding) window.PupDexOnboarding.init();
+    if (window.PupDexFirebase) window.PupDexFirebase.init();
+    if (window.PupDexDogDetector) window.PupDexDogDetector.loadModel();
 
     // Check if initial sample data is needed for empty album
-    const existingDogs = await window.barkdexStorage.getAllDogs();
+    const existingDogs = await window.PupDexStorage.getAllDogs();
     if (existingDogs.length === 0) {
       await this.loadSampleData();
     }
@@ -75,14 +75,14 @@ class BarkdexApp {
     // Switch Camera Button
     const switchCamBtn = document.getElementById('switchCamBtn');
     if (switchCamBtn) {
-      switchCamBtn.addEventListener('click', () => window.barkdexCamera.switchCamera());
+      switchCamBtn.addEventListener('click', () => window.PupDexCamera.switchCamera());
     }
 
     // Sound Toggle Button
     const soundToggleBtn = document.getElementById('soundToggleBtn');
     if (soundToggleBtn) {
       soundToggleBtn.addEventListener('click', () => {
-        const isEnabled = window.barkdexAudio.toggleSound();
+        const isEnabled = window.PupDexAudio.toggleSound();
         soundToggleBtn.textContent = isEnabled ? '🔊' : '🔇';
         this.showToast(isEnabled ? 'Sound On 🔊' : 'Sound Off 🔇');
       });
@@ -92,9 +92,9 @@ class BarkdexApp {
     const aiGuardToggleBtn = document.getElementById('aiGuardToggleBtn');
     if (aiGuardToggleBtn) {
       aiGuardToggleBtn.addEventListener('click', () => {
-        if (window.barkdexDogDetector) {
-          window.barkdexDogDetector.strictMode = !window.barkdexDogDetector.strictMode;
-          const isOn = window.barkdexDogDetector.strictMode;
+        if (window.PupDexDogDetector) {
+          window.PupDexDogDetector.strictMode = !window.PupDexDogDetector.strictMode;
+          const isOn = window.PupDexDogDetector.strictMode;
           aiGuardToggleBtn.textContent = isOn ? '🛡️ AI Guard: ON' : '🔓 AI Guard: OFF';
           this.showToast(isOn ? 'AI Dog Guard Enabled 🛡️' : 'AI Dog Guard Disabled 🔓');
         }
@@ -107,7 +107,7 @@ class BarkdexApp {
         const modal = btn.closest('.modal-overlay');
         if (modal) {
           modal.classList.remove('active');
-          window.barkdexCamera.stopCamera();
+          window.PupDexCamera.stopCamera();
         }
       });
     });
@@ -121,7 +121,7 @@ class BarkdexApp {
     // Export & Import Data Buttons
     const exportBtn = document.getElementById('exportDataBtn');
     if (exportBtn) {
-      exportBtn.addEventListener('click', () => window.barkdexStorage.exportDataJSON());
+      exportBtn.addEventListener('click', () => window.PupDexStorage.exportDataJSON());
     }
 
     const importInput = document.getElementById('importDataInput');
@@ -130,10 +130,10 @@ class BarkdexApp {
         const file = e.target.files[0];
         if (file) {
           const text = await file.text();
-          const success = await window.barkdexStorage.importDataJSON(text);
+          const success = await window.PupDexStorage.importDataJSON(text);
           if (success) {
-            this.showToast('BarkDex imported successfully! 🎉');
-            this.profile = window.barkdexStorage.getProfile();
+            this.showToast('PupDex imported successfully! 🎉');
+            this.profile = window.PupDexStorage.getProfile();
             this.renderHeader();
             this.renderCurrentView();
           } else {
@@ -154,7 +154,7 @@ class BarkdexApp {
       view.classList.toggle('active', view.id === `${tabName}View`);
     });
 
-    window.barkdexAudio.playCardClick();
+    window.PupDexAudio.playCardClick();
     this.renderCurrentView();
   }
 
@@ -165,8 +165,8 @@ class BarkdexApp {
     const progressFillEl = document.getElementById('xpProgressFill');
     const streakNumEl = document.getElementById('streakNum');
 
-    const nextXP = window.barkdexGamification.getXPForLevel(this.profile.level);
-    const title = window.barkdexGamification.getTrainerTitle(this.profile.level);
+    const nextXP = window.PupDexGamification.getXPForLevel(this.profile.level);
+    const title = window.PupDexGamification.getTrainerTitle(this.profile.level);
 
     if (levelTitleEl) levelTitleEl.textContent = title;
     if (levelNumEl) levelNumEl.textContent = `Lvl ${this.profile.level}`;
@@ -183,7 +183,7 @@ class BarkdexApp {
     if (this.currentView === 'dex') {
       await this.renderDexView();
     } else if (this.currentView === 'map') {
-      window.barkdexMap.init();
+      window.PupDexMap.init();
     } else if (this.currentView === 'matrix') {
       await this.renderMatrixView();
     } else if (this.currentView === 'badges') {
@@ -198,7 +198,7 @@ class BarkdexApp {
     const emptyState = document.getElementById('dexEmptyState');
     if (!grid) return;
 
-    const dogs = await window.barkdexStorage.getAllDogs();
+    const dogs = await window.PupDexStorage.getAllDogs();
 
     if (dogs.length === 0) {
       grid.style.display = 'none';
@@ -210,13 +210,13 @@ class BarkdexApp {
     if (emptyState) emptyState.style.display = 'none';
 
     grid.innerHTML = dogs.map(dog => {
-      const rarityObj = window.barkdexGamification.rarities[dog.rarity] || window.barkdexGamification.rarities.common;
-      const sizeObj = window.barkdexGamification.sizes[dog.size] || window.barkdexGamification.sizes.medium;
-      const vibeObj = window.barkdexGamification.vibes[dog.vibe] || window.barkdexGamification.vibes.normal;
+      const rarityObj = window.PupDexGamification.rarities[dog.rarity] || window.PupDexGamification.rarities.common;
+      const sizeObj = window.PupDexGamification.sizes[dog.size] || window.PupDexGamification.sizes.medium;
+      const vibeObj = window.PupDexGamification.vibes[dog.vibe] || window.PupDexGamification.vibes.normal;
       const dateStr = new Date(dog.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 
       return `
-        <div class="dog-card" onclick="window.barkdexApp.openDogDetail('${dog.id}')">
+        <div class="dog-card" onclick="window.PupDexApp.openDogDetail('${dog.id}')">
           <div class="dog-card-img-wrapper">
             <img src="${dog.photo}" class="dog-card-img" alt="Dog Photo" loading="lazy" />
             <div class="rarity-ribbon rarity-${dog.rarity}">${rarityObj.emoji} ${rarityObj.name}</div>
@@ -241,7 +241,7 @@ class BarkdexApp {
     const countEl = document.getElementById('matrixUnlockedCount');
     if (!grid) return;
 
-    const combos = window.barkdexGamification.getMatrixCombos();
+    const combos = window.PupDexGamification.getMatrixCombos();
     const unlocked = this.profile.matrixUnlocked || [];
 
     if (countEl) countEl.textContent = `${unlocked.length} / 9`;
@@ -261,13 +261,13 @@ class BarkdexApp {
     const grid = document.getElementById('badgesGridContainer');
     if (!grid) return;
 
-    const allDogs = await window.barkdexStorage.getAllDogs();
-    const { newlyUnlocked } = window.barkdexGamification.checkAchievements(this.profile, allDogs);
-    window.barkdexStorage.saveProfile(this.profile);
+    const allDogs = await window.PupDexStorage.getAllDogs();
+    const { newlyUnlocked } = window.PupDexGamification.checkAchievements(this.profile, allDogs);
+    window.PupDexStorage.saveProfile(this.profile);
 
     const unlocked = this.profile.badgesUnlocked || [];
 
-    grid.innerHTML = window.barkdexGamification.achievementsList.map(ach => {
+    grid.innerHTML = window.PupDexGamification.achievementsList.map(ach => {
       const isUnlocked = unlocked.includes(ach.id);
       return `
         <div class="badge-card ${isUnlocked ? 'unlocked' : ''}">
@@ -286,12 +286,12 @@ class BarkdexApp {
     const totalRaresEl = document.getElementById('profileTotalRares');
     const rankTitleEl = document.getElementById('profileRankTitle');
 
-    const dogs = await window.barkdexStorage.getAllDogs();
+    const dogs = await window.PupDexStorage.getAllDogs();
     const rareCount = dogs.filter(d => d.rarity === 'rare' || d.rarity === 'epic' || d.rarity === 'legendary').length;
 
     if (totalDogsEl) totalDogsEl.textContent = dogs.length;
     if (totalRaresEl) totalRaresEl.textContent = rareCount;
-    if (rankTitleEl) rankTitleEl.textContent = window.barkdexGamification.getTrainerTitle(this.profile.level);
+    if (rankTitleEl) rankTitleEl.textContent = window.PupDexGamification.getTrainerTitle(this.profile.level);
   }
 
   // Camera & Capture Flow
@@ -302,7 +302,7 @@ class BarkdexApp {
 
     if (modal && video && canvas) {
       modal.classList.add('active');
-      const started = await window.barkdexCamera.startCamera(video, canvas);
+      const started = await window.PupDexCamera.startCamera(video, canvas);
       if (!started) {
         this.showToast('Camera access unavailable. Using snapshot mode! 📸');
       }
@@ -316,21 +316,21 @@ class BarkdexApp {
       shutterBtn.style.opacity = '0.5';
     }
 
-    window.barkdexAudio.playShutter();
+    window.PupDexAudio.playShutter();
 
     // Capture snapshot frame
-    let imgData = window.barkdexCamera.captureSnapshot();
+    let imgData = window.PupDexCamera.captureSnapshot();
     if (!imgData) {
-      imgData = window.barkdexCamera.generatePlaceholderDogImage('medium', 'friendly');
+      imgData = window.PupDexCamera.generatePlaceholderDogImage('medium', 'friendly');
     }
     this.capturedImageData = imgData;
 
     // Check frame using Dog Detector
     let detection = { isDog: true, confidence: 1.0, label: 'Good Boi' };
-    if (window.barkdexDogDetector && window.barkdexDogDetector.strictMode) {
+    if (window.PupDexDogDetector && window.PupDexDogDetector.strictMode) {
       this.showToast('AI Scanning for Good Boi... 🔍');
       const tempImg = await this.createImgFromData(imgData);
-      detection = await window.barkdexDogDetector.detectDog(tempImg);
+      detection = await window.PupDexDogDetector.detectDog(tempImg);
       console.log('AI Detector Result:', detection);
     }
 
@@ -342,7 +342,7 @@ class BarkdexApp {
     // If NOT a dog and user hasn't tried twice (fail-safe override)
     if (!detection.isDog && this.failedAttempts < 1) {
       this.failedAttempts += 1;
-      window.barkdexAudio.playError();
+      window.PupDexAudio.playError();
       
       const detectedName = detection.label || 'Object';
       this.showToast(`No dog detected! 🐶 (Found: ${detectedName}). Tap again to force capture!`);
@@ -356,18 +356,18 @@ class BarkdexApp {
 
     // Success or Force Capture! Reset failed attempts
     this.failedAttempts = 0;
-    window.barkdexCamera.stopCamera();
+    window.PupDexCamera.stopCamera();
 
     // Check Sparkle Lure
     let streakBonus = this.profile.streak;
-    if (window.barkdexTreats && window.barkdexTreats.activeLure) {
+    if (window.PupDexTreats && window.PupDexTreats.activeLure) {
       streakBonus += 5; // Extra legendary luck
-      window.barkdexTreats.activeLure = false;
+      window.PupDexTreats.activeLure = false;
     }
 
     // Roll Gacha Rarity
-    this.pendingRarity = window.barkdexGamification.rollRarity(streakBonus);
-    window.barkdexAudio.playGachaReveal(this.pendingRarity);
+    this.pendingRarity = window.PupDexGamification.rollRarity(streakBonus);
+    window.PupDexAudio.playGachaReveal(this.pendingRarity);
 
     // Hide Camera Modal & Open Options Selection Modal
     document.getElementById('cameraModal')?.classList.remove('active');
@@ -387,7 +387,7 @@ class BarkdexApp {
     const modal = document.getElementById('optionsModal');
     const previewImg = document.getElementById('optionsPreviewImg');
     const rarityBanner = document.getElementById('gachaRarityBanner');
-    const rarityObj = window.barkdexGamification.rarities[this.pendingRarity];
+    const rarityObj = window.PupDexGamification.rarities[this.pendingRarity];
 
     if (previewImg) previewImg.src = this.capturedImageData;
     if (rarityBanner) {
@@ -407,11 +407,11 @@ class BarkdexApp {
     const vibeContainer = document.getElementById('vibeOptionsGrid');
 
     if (sizeContainer) {
-      sizeContainer.innerHTML = Object.keys(window.barkdexGamification.sizes).map(key => {
-        const s = window.barkdexGamification.sizes[key];
+      sizeContainer.innerHTML = Object.keys(window.PupDexGamification.sizes).map(key => {
+        const s = window.PupDexGamification.sizes[key];
         const isSelected = this.selectedSize === key;
         return `
-          <div class="option-card ${isSelected ? 'selected' : ''}" onclick="window.barkdexApp.selectSize('${key}')">
+          <div class="option-card ${isSelected ? 'selected' : ''}" onclick="window.PupDexApp.selectSize('${key}')">
             <div class="option-icon">${s.emoji}</div>
             <div class="option-name">${s.name}</div>
             <div class="option-sub">${s.desc}</div>
@@ -421,11 +421,11 @@ class BarkdexApp {
     }
 
     if (vibeContainer) {
-      vibeContainer.innerHTML = Object.keys(window.barkdexGamification.vibes).map(key => {
-        const v = window.barkdexGamification.vibes[key];
+      vibeContainer.innerHTML = Object.keys(window.PupDexGamification.vibes).map(key => {
+        const v = window.PupDexGamification.vibes[key];
         const isSelected = this.selectedVibe === key;
         return `
-          <div class="option-card ${isSelected ? 'selected' : ''}" onclick="window.barkdexApp.selectVibe('${key}')">
+          <div class="option-card ${isSelected ? 'selected' : ''}" onclick="window.PupDexApp.selectVibe('${key}')">
             <div class="option-icon">${v.emoji}</div>
             <div class="option-name">${v.name}</div>
             <div class="option-sub">${v.desc}</div>
@@ -444,20 +444,20 @@ class BarkdexApp {
 
   selectSize(sizeKey) {
     this.selectedSize = sizeKey;
-    window.barkdexAudio.playCardClick();
+    window.PupDexAudio.playCardClick();
     this.renderOptionPickers();
   }
 
   selectVibe(vibeKey) {
     this.selectedVibe = vibeKey;
-    window.barkdexAudio.playCardClick();
+    window.PupDexAudio.playCardClick();
     this.renderOptionPickers();
   }
 
   async saveCapturedDog() {
     if (!this.selectedSize || !this.selectedVibe || !this.capturedImageData) return;
 
-    const location = await window.barkdexCamera.getGeolocation();
+    const location = await window.PupDexCamera.getGeolocation();
     const comboKey = `${this.selectedSize}-${this.selectedVibe}`;
 
     if (!this.profile.matrixUnlocked) this.profile.matrixUnlocked = [];
@@ -478,30 +478,30 @@ class BarkdexApp {
       locationText: location.text
     };
 
-    await window.barkdexStorage.saveDog(dogRecord);
-    if (window.barkdexFirebase) {
-      window.barkdexFirebase.postToSocialFeed(dogRecord);
+    await window.PupDexStorage.saveDog(dogRecord);
+    if (window.PupDexFirebase) {
+      window.PupDexFirebase.postToSocialFeed(dogRecord);
     }
 
     // Calculate XP & Level Up
-    const earnedXP = window.barkdexGamification.calculateXP(this.pendingRarity, isNewCombo);
+    const earnedXP = window.PupDexGamification.calculateXP(this.pendingRarity, isNewCombo);
     this.profile.xp += earnedXP;
-    this.profile = window.barkdexGamification.updateStreak(this.profile);
-    window.barkdexTreats.addBones(5); // +5 Bones per catch
+    this.profile = window.PupDexGamification.updateStreak(this.profile);
+    window.PupDexTreats.addBones(5); // +5 Bones per catch
 
-    const nextXP = window.barkdexGamification.getXPForLevel(this.profile.level);
+    const nextXP = window.PupDexGamification.getXPForLevel(this.profile.level);
     if (this.profile.xp >= nextXP) {
       this.profile.level += 1;
-      window.barkdexAudio.playLevelUp();
+      window.PupDexAudio.playLevelUp();
       this.showToast(`LEVEL UP! You are now Lvl ${this.profile.level}! 🎉`);
     } else {
-      this.showToast(`+${earnedXP} XP & +5 Bones 🦴! Logged to BarkDex 🐾`);
+      this.showToast(`+${earnedXP} XP & +5 Bones 🦴! Logged to PupDex 🐾`);
     }
 
     // Check Badges
-    const allDogs = await window.barkdexStorage.getAllDogs();
-    const { newlyUnlocked } = window.barkdexGamification.checkAchievements(this.profile, allDogs);
-    window.barkdexStorage.saveProfile(this.profile);
+    const allDogs = await window.PupDexStorage.getAllDogs();
+    const { newlyUnlocked } = window.PupDexGamification.checkAchievements(this.profile, allDogs);
+    window.PupDexStorage.saveProfile(this.profile);
 
     if (newlyUnlocked.length > 0) {
       newlyUnlocked.forEach(ach => {
@@ -516,7 +516,7 @@ class BarkdexApp {
   }
 
   async openDogDetail(id) {
-    const dogs = await window.barkdexStorage.getAllDogs();
+    const dogs = await window.PupDexStorage.getAllDogs();
     const dog = dogs.find(d => d.id === id);
     if (!dog) return;
 
@@ -526,9 +526,9 @@ class BarkdexApp {
     const infoEl = document.getElementById('detailDogInfo');
     const deleteBtn = document.getElementById('deleteDogBtn');
 
-    const rarityObj = window.barkdexGamification.rarities[dog.rarity];
-    const sizeObj = window.barkdexGamification.sizes[dog.size];
-    const vibeObj = window.barkdexGamification.vibes[dog.vibe];
+    const rarityObj = window.PupDexGamification.rarities[dog.rarity];
+    const sizeObj = window.PupDexGamification.sizes[dog.size];
+    const vibeObj = window.PupDexGamification.vibes[dog.vibe];
 
     if (imgEl) imgEl.src = dog.photo;
     if (infoEl) {
@@ -544,8 +544,8 @@ class BarkdexApp {
 
     if (deleteBtn) {
       deleteBtn.onclick = async () => {
-        if (confirm('Release this Good Boi from your BarkDex?')) {
-          await window.barkdexStorage.deleteDog(id);
+        if (confirm('Release this Good Boi from your PupDex?')) {
+          await window.PupDexStorage.deleteDog(id);
           modal.classList.remove('active');
           this.showToast('Dog released 🐾');
           this.renderCurrentView();
@@ -578,7 +578,7 @@ class BarkdexApp {
       {
         id: 'sample_1',
         timestamp: Date.now() - 3600000 * 4,
-        photo: window.barkdexCamera.generatePlaceholderDogImage('potato', 'friendly'),
+        photo: window.PupDexCamera.generatePlaceholderDogImage('potato', 'friendly'),
         rarity: 'rare',
         size: 'potato',
         vibe: 'friendly',
@@ -588,7 +588,7 @@ class BarkdexApp {
       {
         id: 'sample_2',
         timestamp: Date.now() - 3600000 * 24,
-        photo: window.barkdexCamera.generatePlaceholderDogImage('chonker', 'normal'),
+        photo: window.PupDexCamera.generatePlaceholderDogImage('chonker', 'normal'),
         rarity: 'epic',
         size: 'chonker',
         vibe: 'normal',
@@ -598,16 +598,16 @@ class BarkdexApp {
     ];
 
     for (const d of sampleDogs) {
-      await window.barkdexStorage.saveDog(d);
+      await window.PupDexStorage.saveDog(d);
     }
     this.profile.xp = 125;
     this.profile.level = 2;
     this.profile.matrixUnlocked = ['potato-friendly', 'chonker-normal'];
-    window.barkdexStorage.saveProfile(this.profile);
+    window.PupDexStorage.saveProfile(this.profile);
   }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  window.barkdexApp = new BarkdexApp();
-  window.barkdexApp.init();
+  window.PupDexApp = new PupDexApp();
+  window.PupDexApp.init();
 });
