@@ -1,0 +1,161 @@
+// Camera Manager for BarkDex Viewfinder
+class BarkdexCamera {
+  constructor() {
+    this.stream = null;
+    this.videoElement = null;
+    this.canvasElement = null;
+    this.facingMode = 'environment'; // default to rear camera on mobile
+  }
+
+  async startCamera(videoEl, canvasEl) {
+    this.videoElement = videoEl;
+    this.canvasElement = canvasEl;
+
+    if (this.stream) {
+      this.stopCamera();
+    }
+
+    try {
+      const constraints = {
+        video: {
+          facingMode: { ideal: this.facingMode },
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        },
+        audio: false
+      };
+
+      this.stream = await navigator.mediaDevices.getUserMedia(constraints);
+      this.videoElement.srcObject = this.stream;
+      await this.videoElement.play();
+      return true;
+    } catch (err) {
+      console.warn('Camera stream failed or denied:', err);
+      return false;
+    }
+  }
+
+  switchCamera() {
+    this.facingMode = this.facingMode === 'environment' ? 'user' : 'environment';
+    if (this.videoElement && this.canvasElement) {
+      return this.startCamera(this.videoElement, this.canvasElement);
+    }
+  }
+
+  stopCamera() {
+    if (this.stream) {
+      this.stream.getTracks().forEach(track => track.stop());
+      this.stream = null;
+    }
+    if (this.videoElement) {
+      this.videoElement.srcObject = null;
+    }
+  }
+
+  captureSnapshot() {
+    if (!this.videoElement || !this.canvasElement) return null;
+
+    const video = this.videoElement;
+    const canvas = this.canvasElement;
+    const ctx = canvas.getContext('2d');
+
+    // Square crop snapshot for cute cards
+    const width = video.videoWidth || 640;
+    const height = video.videoHeight || 480;
+    const size = Math.min(width, height);
+    const startX = (width - size) / 2;
+    const startY = (height - size) / 2;
+
+    canvas.width = 400;
+    canvas.height = 400;
+
+    // Draw square cropped video frame onto canvas
+    ctx.drawImage(video, startX, startY, size, size, 0, 0, 400, 400);
+
+    // Return compressed JPEG data URL for lightweight storage
+    return canvas.toDataURL('image/jpeg', 0.82);
+  }
+
+  // Create a cute cartoon fallback image if camera isn't available
+  generatePlaceholderDogImage(sizeKey, vibeKey) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 400;
+    canvas.height = 400;
+    const ctx = canvas.getContext('2d');
+
+    // Gradient background
+    const grad = ctx.createLinearGradient(0, 0, 400, 400);
+    grad.addColorStop(0, '#ff9a9e');
+    grad.addColorStop(1, '#fecfef');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 400, 400);
+
+    // Cute Dog Face Silhouette
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(200, 210, 110, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Ears
+    ctx.beginPath();
+    ctx.ellipse(110, 140, 35, 70, -0.3, 0, Math.PI * 2);
+    ctx.ellipse(290, 140, 35, 70, 0.3, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Eyes
+    ctx.fillStyle = '#2d3748';
+    ctx.beginPath();
+    ctx.arc(160, 190, 14, 0, Math.PI * 2);
+    ctx.arc(240, 190, 14, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Nose
+    ctx.beginPath();
+    ctx.ellipse(200, 225, 18, 12, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Cute Smile / Tongue
+    ctx.strokeStyle = '#2d3748';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.arc(185, 240, 12, 0, Math.PI);
+    ctx.arc(215, 240, 12, 0, Math.PI);
+    ctx.stroke();
+
+    // Tongue
+    ctx.fillStyle = '#ff6b81';
+    ctx.beginPath();
+    ctx.arc(200, 252, 10, 0, Math.PI);
+    ctx.fill();
+
+    // Text Label
+    ctx.fillStyle = '#4a5568';
+    ctx.font = 'bold 20px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(`Wild Good Boi`, 200, 340);
+
+    return canvas.toDataURL('image/jpeg', 0.85);
+  }
+
+  async getGeolocation() {
+    return new Promise((resolve) => {
+      if (!navigator.geolocation) {
+        resolve({ lat: null, lng: null, text: 'Neighborhood Walk' });
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const lat = pos.coords.latitude.toFixed(4);
+          const lng = pos.coords.longitude.toFixed(4);
+          resolve({ lat, lng, text: `${lat}°, ${lng}°` });
+        },
+        () => {
+          resolve({ lat: null, lng: null, text: 'Neighborhood Walk' });
+        },
+        { timeout: 5000 }
+      );
+    });
+  }
+}
+
+window.barkdexCamera = new BarkdexCamera();
