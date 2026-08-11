@@ -1,5 +1,5 @@
 // Interactive Onboarding Controller for PupDex
-class PupDexOnboarding {
+class PupdexOnboarding {
   constructor() {
     this.currentSlide = 0;
     this.slides = [
@@ -22,7 +22,7 @@ class PupDexOnboarding {
   }
 
   init() {
-    const hasSeen = localStorage.getItem('PupDex_seen_onboarding');
+    const hasSeen = localStorage.getItem('pupdex_seen_onboarding');
     if (!hasSeen) {
       this.openModal();
     }
@@ -37,7 +37,7 @@ class PupDexOnboarding {
   }
 
   closeModal() {
-    localStorage.setItem('PupDex_seen_onboarding', 'true');
+    localStorage.setItem('pupdex_seen_onboarding', 'true');
     const modal = document.getElementById('onboardingModal');
     if (modal) modal.classList.remove('active');
   }
@@ -82,4 +82,4 @@ class PupDexOnboarding {
   }
 }
 
-window.PupDexOnboarding = new PupDexOnboarding();
+window.pupdexOnboarding = new PupdexOnboarding();
