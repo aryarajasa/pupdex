@@ -122,7 +122,7 @@
         <h3 id="profileRankTitle" style="font-size: 20px; font-weight: 800;">Puppy Observer 🐣</h3>
         <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Registered PupDex Scout</p>
 
-        <button class="btn-primary" style="margin-top:14px;background:#4285f4;font-size:13px;" onclick="window.pupdexFirebase.signInWithGoogle()">Sign In with Google (Gmail) 🌐</button>
+        <button class="btn-primary" style="margin-top:14px;background:#4285f4;font-size:13px;" onclick="window.pupdexFirebase.signInWithGoogle()">Sign In / Edit Profile 🧢</button>
 
         <div style="display: flex; justify-content: space-around; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border-subtle);">
           <div>
@@ -162,7 +162,29 @@
       <div id="obSlideDots" class="ob-dots"></div>
 
       <button id="obNextBtn" class="btn-primary" style="width: 100%; padding: 14px; font-size: 16px;" onclick="window.pupdexOnboarding.nextSlide()">Next →</button>
-      <button class="btn-primary" style="width: 100%; margin-top: 10px; background: #4285f4;" onclick="window.pupdexFirebase.signInWithGoogle()">Sign In with Google (Gmail) 🌐</button>
+      <button class="btn-primary" style="width: 100%; margin-top: 10px; background: #4285f4;" onclick="window.pupdexFirebase.signInWithGoogle()">Sign In / Create Profile 🧢</button>
+    </div>
+  </div>
+
+  <!-- Quick Profile & Scout Sign-In Modal -->
+  <div id="loginModal" class="modal-overlay" style="background: var(--bg-primary); overflow-y: auto;">
+    <div class="modal-header">
+      <h3 style="font-weight: 800; color: var(--text-main);">🧢 Create Scout Profile</h3>
+      <button class="icon-btn close-modal-btn">✕</button>
+    </div>
+    <div class="gacha-container">
+      <div class="options-group-title">1. YOUR SCOUT NAME</div>
+      <input type="text" id="scoutNameInput" placeholder="Enter your name (e.g. Jacob)" style="width:100%;padding:12px 16px;border-radius:18px;border:1.5px solid var(--border-subtle);font-size:14px;font-weight:700;margin-bottom:14px;" />
+
+      <div class="options-group-title">2. CHOOSE AVATAR EMOJI</div>
+      <div id="avatarEmojiGrid" class="options-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 20px;">
+        <button class="option-card selected" onclick="window.selectedAvatar='🧢'">🧢</button>
+        <button class="option-card" onclick="window.selectedAvatar='🐶'">🐶</button>
+        <button class="option-card" onclick="window.selectedAvatar='🦊'">🦊</button>
+        <button class="option-card" onclick="window.selectedAvatar='🐼'">🐼</button>
+      </div>
+
+      <button class="btn-primary" style="width:100%;padding:14px;font-size:15px;" onclick="window.pupdexFirebase.saveQuickProfile(document.getElementById('scoutNameInput').value, window.selectedAvatar || '🧢')">Start PupDex Adventure 🚀</button>
     </div>
   </div>
 

@@ -31,18 +31,12 @@ class PupdexFirebase {
       await this.injectScript('https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js');
       await this.injectScript('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js');
 
-      if (window.firebase) {
-        const firebaseConfig = {
-          apiKey: "AIzaSyBarkDexPublicDemoKey12345",
-          authDomain: "barkdex-app.firebaseapp.com",
-          projectId: "barkdex-app",
-          storageBucket: "barkdex-app.appspot.com",
-          messagingSenderId: "123456789",
-          appId: "1:123456789:web:abcdef123456"
-        };
-
+      // Check if custom config exists in LocalStorage
+      const customConfigStr = localStorage.getItem('pupdex_firebase_config');
+      if (customConfigStr && window.firebase) {
+        const config = JSON.parse(customConfigStr);
         if (!firebase.apps.length) {
-          firebase.initializeApp(firebaseConfig);
+          firebase.initializeApp(config);
         }
         this.auth = firebase.auth();
         this.db = firebase.firestore();
@@ -63,28 +57,56 @@ class PupdexFirebase {
 
   async signInWithGoogle() {
     await this.lazyLoadFirebase();
-    if (!this.auth) {
-      window.pupdexApp.showToast('Signed in as Guest Scout 🧢');
-      return;
+    
+    // If a custom Firebase project is configured, attempt popup
+    if (this.auth && localStorage.getItem('pupdex_firebase_config')) {
+      try {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        const result = await this.auth.signInWithPopup(provider);
+        this.user = result.user;
+        window.pupdexApp.showToast(`Welcome, ${this.user.displayName}! 🐶`);
+        this.updateUserUI(this.user);
+        return;
+      } catch (err) {
+        console.warn('Google Auth popup error:', err);
+      }
     }
-    try {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      const result = await this.auth.signInWithPopup(provider);
-      this.user = result.user;
-      window.pupdexApp.showToast(`Welcome, ${this.user.displayName}! 🐶`);
-      this.updateUserUI(this.user);
-    } catch (err) {
-      console.warn('Google Sign-in failed or closed:', err);
-      window.pupdexApp.showToast('Signed in as Guest Scout 🧢');
-    }
+
+    // Default: Smooth Quick Profile Sign-In Modal
+    this.openQuickProfileModal();
+  }
+
+  openQuickProfileModal() {
+    const modal = document.getElementById('loginModal');
+    if (modal) modal.classList.add('active');
+  }
+
+  saveQuickProfile(name, emojiAvatar) {
+    const userObj = {
+      displayName: name || 'Good Boi Scout',
+      photoEmoji: emojiAvatar || '🧢'
+    };
+    this.user = userObj;
+    localStorage.setItem('pupdex_quick_user', JSON.stringify(userObj));
+    this.updateUserUI(userObj);
+    
+    document.getElementById('loginModal')?.classList.remove('active');
+    document.getElementById('onboardingModal')?.classList.remove('active');
+    window.pupdexApp.showToast(`Welcome, ${userObj.displayName}! 🐾`);
   }
 
   updateUserUI(user) {
     const avatarEl = document.querySelector('.brand-avatar');
     const titleEl = document.getElementById('profileRankTitle');
-    if (avatarEl && user.photoURL) {
-      avatarEl.innerHTML = `<img src="${user.photoURL}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" />`;
+    
+    if (avatarEl) {
+      if (user.photoURL) {
+        avatarEl.innerHTML = `<img src="${user.photoURL}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" />`;
+      } else if (user.photoEmoji) {
+        avatarEl.innerHTML = user.photoEmoji;
+      }
     }
+
     if (titleEl && user.displayName) {
       titleEl.textContent = user.displayName;
     }
@@ -95,7 +117,7 @@ class PupdexFirebase {
     try {
       await this.db.collection('posts').add({
         ...dogRecord,
-        userId: this.user.uid,
+        userId: this.user.uid || 'guest',
         userName: this.user.displayName || 'Good Boi Scout',
         userPhoto: this.user.photoURL || '',
         boopsCount: 0,
